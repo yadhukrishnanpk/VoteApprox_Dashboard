@@ -7,39 +7,70 @@
                     
                     <table class="table table-hover align-middle">
                         
-                        <thead class="table-light">
-                            <tr>
-                                <th>Photo</th>
-                                <th>Voters Name</th>
-                                <th>Voter ID</th>
-                                <th>Date Of Birth</th>
-                                <th>Eligibility</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        
-                        <tbody>
-                        {% for data in datas %}
+                                            <thead class="table-light">
                         <tr>
-                            <td>
-                                {% if data.Voter_photo %}
-                                    <img src="{{ data.Voter_photo.url }}" 
-                                        alt="{{ data.name }}" 
-                                        style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #dee2e6;border-radius:10%;">
-                                {% else %}
-                                    <span class="text-muted">No Photo</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ data.name }}</td>
-                            <td>{{ data.voter_id }}</td>
-                            <td>{{ data.dob }}</td>
-                            <td>{{ data.get_eligibility_display }}</td>
-                            <td>{{ data.vote_status }}</td>
-                            <td>
-                            </td>
+                            <th>Photo</th>
+                            <th>Name</th>
+                            <th>Voter ID</th>
+                            <th>DOB</th>
+                            <th>Voted For</th>   <th>Party</th>       <th>Eligibility</th>
+                            <th>Status</th>
                         </tr>
-                        {% endfor %}
-                    </tbody>
+                    </thead>
+                        
+                                    <tbody>
+                {% for data in voters %}
+                <tr>
+                    <td>
+                        {% if data.Voter_photo %}
+                            <img src="{{ data.Voter_photo.url }}" 
+                                alt="{{ data.name }}" 
+                                style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #dee2e6; border-radius: 10%;">
+                        {% else %}
+                            <div class="rounded bg-light d-flex align-items-center justify-content-center border" 
+                                style="width: 50px; height: 50px;">
+                                <i class="bi bi-person text-secondary" style="font-size: 1.5rem;"></i>
+                            </div>
+                        {% endif %}
+                    </td>
+
+        <td><strong>{{ data.name }}</strong></td>
+        <td>{{ data.voter_id }}</td>
+        <td>{{ data.dob|date:"M d, Y" }}</td>
+
+        <td>
+            <span class="badge {% if data.voted_for_candidate == 'Not Voted' %}bg-white text-dark{% else %}bg-white text-dark{% endif %}">
+                {{ data.voted_for_candidate }}
+            </span>
+        </td>
+        <td>
+            <span class="badge bg-white text-dark">{{ data.voted_for_party }}</span>
+        </td>
+
+        <td>
+     {% if data.eligibility == "NOT ELIGIBLE" %}
+        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">INELIGIBLE</span>
+    {% else %}
+        <span class="badge bg-success-subtle text-black border border-success-subtle">ELIGIBLE</span>
+    {% endif %}
+</td>
+        <td>
+            {% if data.vote_status == "NOT VOTED" %}
+        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">NOT VOTED</span>
+    {% else %}
+        <span class="badge bg-success-subtle text-black border border-success-subtle">VOTED</span>
+    {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="8" class="text-center py-5">
+            <i class="bi bi-search fs-2 text-muted"></i>
+            <p class="mt-2">No voters found for the selected election.</p>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
                     </table>
 {% endblock %}
 
