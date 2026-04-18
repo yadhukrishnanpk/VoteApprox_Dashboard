@@ -1,0 +1,45 @@
+{% extends 'index.html'%}
+
+{% block content %}
+  <div class="card shadow border-0 p-4">
+                <h5 class="mb-4">Voters List</h5>
+                <div class="table-responsive">
+                    
+                    <table class="table table-hover align-middle">
+                        
+                        <thead class="table-light">
+                            <tr>
+                                <th>Photo</th>
+                                <th>Voters Name</th>
+                                <th>Voter ID</th>
+                                <th>Date Of Birth</th>
+                                <th>Eligibility</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                        {% for data in datas %}
+                        <tr>
+                            <td>
+                                {% if data.Voter_photo %}
+                                    <img src="{{ data.Voter_photo.url }}" 
+                                        alt="{{ data.name }}" 
+                                        style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #dee2e6;border-radius:10%;">
+                                {% else %}
+                                    <span class="text-muted">No Photo</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ data.name }}</td>
+                            <td>{{ data.voter_id }}</td>
+                            <td>{{ data.dob }}</td>
+                            <td>{{ data.get_eligibility_display }}</td>
+                            <td>{{ data.vote_status }}</td>
+                            <td>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+{% endblock %}
+

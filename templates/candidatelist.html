@@ -1,0 +1,52 @@
+{% extends 'index.html'%} {% block content %}
+<div class="card shadow border-0 p-4">
+  <h5 class="mb-4">Candidate List</h5>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Photo</th>
+          <th>Candidate Name</th>
+          <th>Party</th>
+          <th>Bio</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for data in candidate %}
+        <tr>
+          <td>
+            {% if data.photo %}
+            <img
+              src="{{ data.photo.url }}"
+              alt="{{ data.name }}"
+              style="
+                width: 60px;
+                height: 60px;
+                object-fit: cover;
+                border: 1px solid #dee2e6;
+                border-radius: 10%;
+              "
+            />
+            {% else %}
+            <div
+              class="rounded-circle bg-light d-flex align-items-center justify-content-center border"
+              style="width: 50px; height: 50px;"
+            >
+              <i
+                class="bi bi-person-fill text-secondary"
+                style="font-size: 1.5rem"
+              ></i>
+            </div>
+            {% endif %}
+          </td>
+          <td>{{ data.name }}</td>
+          <td>{{ data.party }}</td>
+          <td>{{ data.bio }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endblock %}
+  </div>
+</div>
