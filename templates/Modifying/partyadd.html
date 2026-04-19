@@ -5,22 +5,54 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
-<div class="card shadow border-0 p-4">
-    <h5 class="mb-4">Add Party</h5>
-    <div class="table-responsive" >
-        <form method="post" class="my-class" enctype="multipart/form-data">
-            {% csrf_token %} {{ form|crispy }}
-            
-            <br>
-            <div class="btn-toolbar mb-2 mb-md-0">
-                <button type="submit" class="btn btn-sm btn-primary px-4">
-                    SUBMIT
-                </button>
-                <a href="{% url 'partyadd' %}" class="btn btn-sm btn-outline-secondary ms-2">
-                    Cancel
-                </a>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 border-start border-success border-4">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success bg-opacity-10 p-2 rounded-3 me-3">
+                            <i class="bi bi-person-plus-fill text-secondary fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Party Registration</h5>
+                            <small class="text-muted">Register a new political entity into the system</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post" class="my-class" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                {{ form|crispy }}
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top d-flex align-items-center justify-content-between">
+                            <a href="{% url 'partyslist' %}" class="btn btn-light px-4 text-muted">
+                                <i class="bi bi-arrow-left me-1"></i> Back
+                            </a>
+                            
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-success px-5 fw-semibold shadow-sm">
+                                    SAVE
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
+
+            <div class="alert alert-info mt-4 border-0 shadow-sm" role="alert" style="background-color: #e7f3ff;">
+                <small>
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <strong>Tip:</strong> Ensure the party logo is high resolution (PNG or JPG) for better visibility on ballots.
+                </small>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -29,11 +61,11 @@
 
 <script>
     $(document).ready(function() {
-        // This targets the <select> elements inside your crispy form
         $('select').select2({
             theme: 'bootstrap-5',
-            placeholder: 'Select or search...',
-            width: '100%'
+            placeholder: 'Search and select...',
+            width: '100%',
+            dropdownParent: $('.card-body') // Better positioning inside cards
         });
     });
 </script>

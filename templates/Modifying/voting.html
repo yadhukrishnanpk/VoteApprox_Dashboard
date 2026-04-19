@@ -5,22 +5,39 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
-<div class="card shadow border-0 p-4">
-    <h5 class="mb-4">Cast Voting</h5>
-    <div class="table-responsive" >
-        <form method="post" class="my-class" enctype="multipart/form-data">
-            {% csrf_token %} {{ form|crispy }}
-            
-            <br>
-            <div class="btn-toolbar mb-2 mb-md-0">
-                <button type="submit" class="btn btn-sm btn-primary px-4">
-                    SUBMIT VOTE
-                </button>
-                <a href="{% url 'castlist' %}" class="btn btn-sm btn-outline-secondary ms-2">
-                    Cancel
-                </a>
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0" style="border-radius: 15px; overflow: hidden;">
+                <div class="p-4 text-center" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
+                    <h4 class="text-white mb-0 fw-bold">VOTE FOR CITIZEN</h4>
+                    <p class="text-white-50 small mb-0">Please fill out the form below to submit your ballot.</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" class="my-class" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            {{ form|crispy }}
+                        </div>
+
+                        <hr class="my-4 opacity-0">
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm" 
+                                    style="border-radius: 10px; font-weight: 600; letter-spacing: 1px; background-color: #0d6efd; border: none;">
+                                SUBMIT VOTE
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
+            
+            <p class="text-center mt-4 text-muted small">
+                <i class="bi bi-shield-lock me-1"></i> Your vote is encrypted and secure.
+            </p>
+        </div>
     </div>
 </div>
 
@@ -29,10 +46,9 @@
 
 <script>
     $(document).ready(function() {
-        // This targets the <select> elements inside your crispy form
         $('select').select2({
             theme: 'bootstrap-5',
-            placeholder: 'Select or search...',
+            placeholder: 'Click to select...',
             width: '100%'
         });
     });

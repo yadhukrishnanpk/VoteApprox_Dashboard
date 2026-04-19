@@ -50,14 +50,14 @@
     
     <li class="nav-item" style="list-style-type: none;">
         <a class="nav-link small" 
-           href="" 
+           href="{% url 'candidateedit' data.id %}" 
            style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #283cd3;">
             <i class="bi bi-pencil-square me-2" style="color: inherit;"></i> Edit
         </a>
     </li>
     <li class="nav-item" style="list-style-type: none;">
         <a class="nav-link small" 
-           href="" 
+           href="{% url 'candidatedelete' data.id %}" 
            style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #dc3545;">
             <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
         </a>

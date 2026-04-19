@@ -74,6 +74,13 @@ class CandidateForm(forms.ModelForm):
     class Meta:
         model = Candidate
         fields = '__all__'
+        widgets = {
+            'bio': forms.Textarea(attrs={
+                'rows': 1, 
+                'style': 'resize:none;', 
+                'placeholder': 'Enter a short bio...'
+            }),
+        }
         
 class PartyForm(forms.ModelForm):
     class Meta:

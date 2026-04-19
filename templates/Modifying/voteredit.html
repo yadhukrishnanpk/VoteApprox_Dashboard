@@ -1,0 +1,40 @@
+{% extends 'index.html' %} 
+{% block content %} 
+{% load crispy_forms_tags %}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+<div class="card shadow border-0 p-4">
+    <h5 class="mb-4">Edit Voters</h5>
+    <div class="table-responsive" >
+        <form method="post" class="my-class" enctype="multipart/form-data">
+            {% csrf_token %} {{ form|crispy }}
+            
+            <br>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <button type="submit" class="btn btn-sm btn-primary px-4">
+                    SUBMIT
+                </button>
+                <a href="{% url 'voterslist' %}" class="btn btn-sm btn-outline-secondary ms-2">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // This targets the <select> elements inside your crispy form
+        $('select').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select or search...',
+            width: '100%'
+        });
+    });
+</script>
+{% endblock %}

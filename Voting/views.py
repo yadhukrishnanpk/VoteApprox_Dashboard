@@ -255,3 +255,78 @@ def partyadd(request, election_id=None):
         'party': parties,
     }
     return render(request, "Modifying/partyadd.html", context)
+
+def Electionedit(request, pk):
+    instance= get_object_or_404(Election, pk=pk)
+    if request.method == "POST":
+        edit=ElectionForm(request.POST, instance=instance)
+        if edit.is_valid():
+            edit.save()
+            return redirect('electionlist')
+    edit=ElectionForm(instance=instance)
+    context={
+        'form': edit
+    }
+    return render(request, "Modifying/electionedit.html", context)
+
+def ElectionDelete(request,pk):
+    instance=get_object_or_404(Election,pk=pk)
+    instance.delete()
+    return redirect('electionlist')
+
+def Voteredit(request, pk):
+    instance= get_object_or_404(Voter, pk=pk)
+    if request.method == "POST":
+        edit=VoterForm(request.POST, request.FILES, instance=instance)
+        if edit.is_valid():
+            edit.save()
+            return redirect('voterslist')
+    edit=VoterForm(instance=instance)
+    context={
+        'form': edit
+    }
+    return render(request, "Modifying/voteredit.html", context)
+
+def voterDelete(request,pk):
+    instance=get_object_or_404(Voter,pk=pk)
+    instance.delete()
+    return redirect('voterslist')
+
+
+def candidateedit(request, pk):
+    instance= get_object_or_404(Candidate, pk=pk)
+    if request.method == "POST":
+        edit=CandidateForm(request.POST, request.FILES, instance=instance)
+        if edit.is_valid():
+            edit.save()
+            return redirect('candidateslist')
+    edit=CandidateForm(instance=instance)
+    context={
+        'form': edit
+    }
+    return render(request, "Modifying/candidateedit.html", context)
+
+def candidateDelete(request,pk):
+    instance=get_object_or_404(Candidate,pk=pk)
+    instance.delete()
+    return redirect('candidateslist')
+
+
+
+def partyedit(request, pk):
+    instance= get_object_or_404(Party, pk=pk)
+    if request.method == "POST":
+        edit=PartyForm(request.POST, request.FILES, instance=instance)
+        if edit.is_valid():
+            edit.save()
+            return redirect('partyslist')
+    edit=PartyForm(instance=instance)
+    context={
+        'form': edit
+    }
+    return render(request, "Modifying/partyedit.html", context)
+
+def partydelete(request,pk):
+    instance=get_object_or_404(Party,pk=pk)
+    instance.delete()
+    return redirect('partyslist')
