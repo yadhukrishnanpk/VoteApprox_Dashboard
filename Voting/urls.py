@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
     path('index/', views.index, name='index'),
     path('election/<int:election_id>/', views.index, name='index_with_id'),
@@ -13,4 +14,14 @@ urlpatterns = [
     path('voters/<int:election_id>/', views.voters_list, name='voterlist'),
     path('candidates/<int:election_id>/', views.candidate_list, name='candidatelist'),
     path('parties/<int:election_id>/', views.party_list, name='partylist'),
+    
+    
+    #Modifying
+    path('voting/', views.vote_cast, name='castlist'),
+    path('ElectionAdd/', views.Electionadd, name='electionadd'),
+    path('VotersAdd/', views.votersadd, name='votersadd'),
+    path('CandidateAdd/', views.candidateadd, name='candidateadd'),
+    path('PartyAdd/', views.partyadd, name='partyadd'),
+    
 ]
+

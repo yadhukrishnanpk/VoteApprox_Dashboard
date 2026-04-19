@@ -5,15 +5,18 @@
     <table class="table table-hover align-middle">
       <thead class="table-light">
         <tr>
+          <th>No</th>
           <th>Flag</th>
           <th>Party Name </th>
           <th>Abbreviation</th>
+          <th>Action</th>
         </tr>
       </thead>
 
       <tbody>
         {% for data in add %}
         <tr>
+          <td>{{ forloop.counter }}</td>
           <td>
             {% if data.photo %}
             <img
@@ -41,6 +44,24 @@
           </td>
           <td>{{ data.name }}</td>
           <td>{{ data.abbreviation}}</td>
+          <td> <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
+    
+    <li class="nav-item" style="list-style-type: none;">
+        <a class="nav-link small" 
+           href="" 
+           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #283cd3;">
+            <i class="bi bi-pencil-square me-2" style="color: inherit;"></i> Edit
+        </a>
+    </li>
+    <li class="nav-item" style="list-style-type: none;">
+        <a class="nav-link small" 
+           href="" 
+           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #dc3545;">
+            <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
+        </a>
+    </li>
+
+</ul></td>
         </tr>
         {% endfor %}
       </tbody>

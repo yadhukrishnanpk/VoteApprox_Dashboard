@@ -1,35 +1,59 @@
 {% extends "index.html" %} {% block content %}
+{% load tz %}
 <div class="card shadow border-0 p-4">
     <h5 class="mb-4">All Elections</h5>
     <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead class="table-light">
                 <tr>
+                    <th>No</th>
                     <th>Election Name</th>
                     <th>Start Date</th>
                     <th>End Date</th>
                     <th>Status</th>
+                    <th>View</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for e in elections %}
                 <tr>
+                    <td>{{ forloop.counter }}</td>
                     <td><strong>{{ e.title }}</strong></td>
-                    <td>{{ e.start_date|date:"d M Y, h:i A" }}</td>
-                    <td>{{ e.end_date|date:"d M Y, h:i A" }}</td>
-                    <td>
-                        {% if e.end_date < now %}
-                            <span class="badge bg-secondary">Completed</span>
-                        {% else %}
-                            <span class="badge bg-success">Active</span>
-                        {% endif %}
-                    </td>
-                    <td>
+                    <td>{{ e.start_date|date:"d M Y" }} <br> <small class="text-muted">{{ e.start_time|time:"h:i A" }}</small></td>
+                        <td>{{ e.end_date|date:"d M Y" }} <br> <small class="text-muted">{{ e.end_time|time:"h:i A" }}</small></td>
+                        <td>
+                            {% if e.full_end < current_time %}
+                                <span class="badge bg-secondary">COMPLETED</span>
+                            {% elif e.full_start > current_time %}
+                                <span class="badge bg-warning text-dark">UPCOMING</span>
+                            {% else %}
+                                <span class="badge bg-success">ACTIVE</span>
+                            {% endif %}
+                        </td>
+                        <td>
                         <a href="{% url 'index_with_id' e.id %}" class="btn btn-sm btn-primary">
-                            View Dashboard
+                           Dashboard
                         </a>
                     </td>
+                    <td> <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
+    
+    <li class="nav-item" style="list-style-type: none;">
+        <a class="nav-link small" 
+           href="" 
+           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #283cd3;">
+            <i class="bi bi-pencil-square me-2" style="color: inherit;"></i> Edit
+        </a>
+    </li>
+    <li class="nav-item" style="list-style-type: none;">
+        <a class="nav-link small" 
+           href="" 
+           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #dc3545;">
+            <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
+        </a>
+    </li>
+
+</ul></td>
                 </tr>
                 {% endfor %}
             </tbody>

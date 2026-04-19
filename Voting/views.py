@@ -1,8 +1,13 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404,redirect
 from .models import Candidate, Vote, Voter, Party, Election
 from django.db.models import Count, Q
+from .forms import VotingForm,VoterForm,ElectionForm,CandidateForm,PartyForm
+from django.utils import timezone
+from datetime import datetime
+from zoneinfo import ZoneInfo
+from django.conf import settings
 
-# Helper function to avoid repeating code in every view
+
 def get_election_data(election_id):
     
     all_elections = Election.objects.all()
@@ -59,7 +64,7 @@ def voters_list(request, election_id=None):
     voters = Voter.objects.all().prefetch_related('vote_set__candidate__party')
     
     for voter in voters:
-        # Look for a vote record specifically for THIS election
+    
         vote_record = voter.vote_set.filter(election=current_election).first()
         if vote_record:
             voter.voted_for_party = vote_record.candidate.party.name
@@ -78,7 +83,7 @@ def candidate_list(request, election_id=None):
     addcandidate=Candidate.objects.all()
     current_election, all_elections = get_election_data(election_id)
     
-    # Filter: Only show candidates registered for this election
+   
     if current_election:
         candidates = current_election.candidates.all()
     else:
@@ -97,7 +102,7 @@ def party_list(request, election_id=None):
     current_election, all_elections = get_election_data(election_id)
     
     if current_election:
-        # Change 'candidate' to 'candidates'
+      
         parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
     else:
         parties = []
@@ -112,10 +117,141 @@ def party_list(request, election_id=None):
     return render(request, "partylist.html", context)
 
 def election_list(request):
-    all_elections = Election.objects.all() 
-    # For the general list, we don't necessarily need a "current" election filter
+    all_elections = Election.objects.all()
+    current_time = timezone.now()
+    user_tz = ZoneInfo(settings.TIME_ZONE)
+    for e in all_elections:
+        if e.start_date and e.start_time:
+            naive_start = datetime.combine(e.start_date, e.start_time)
+            naive_end = datetime.combine(e.end_date, e.end_time)
+            e.full_start = naive_start.replace(tzinfo=user_tz)
+            e.full_end = naive_end.replace(tzinfo=user_tz)
+        else:
+            e.full_start = current_time
+            e.full_end = current_time
     context = {
         'all_elections': all_elections,
         'elections': all_elections, 
+        'current_time': current_time,
     }
     return render(request, "electionlist.html", context)
+
+
+
+# MODIFYING
+
+def vote_cast(request, election_id=None):
+    if request.method == "POST":
+        form = VotingForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect(request.path) # Redirects to the same page
+    else:
+        form = VotingForm()
+        
+    current_election, all_elections = get_election_data(election_id)
+    
+    if current_election:
+        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
+    else:
+        parties = []
+    context = {
+        'form': form,
+        'all_elections': all_elections,
+        'election': current_election,
+        'party': parties,
+    }
+    return render(request, "Modifying/voting.html", context)
+
+def Electionadd(request, election_id=None):
+    if request.method == "POST":
+        form = ElectionForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect(request.path) # Redirects to the same page
+    else:
+        form = ElectionForm()
+        
+    current_election, all_elections = get_election_data(election_id)
+    
+    if current_election:
+        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
+    else:
+        parties = []
+    context = {
+        'form': form,
+        'all_elections': all_elections,
+        'election': current_election,
+        'party': parties,
+    }
+    return render(request, "Modifying/electionadd.html", context)
+
+def votersadd(request, election_id=None):
+    if request.method == "POST":
+        form = VoterForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect(request.path)
+    else:
+        form = VoterForm()
+        
+    current_election, all_elections = get_election_data(election_id)
+    
+    if current_election:
+        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
+    else:
+        parties = []
+    context = {
+        'form': form,
+        'all_elections': all_elections,
+        'election': current_election,
+        'party': parties,
+    }
+    return render(request, "Modifying/votersadd.html", context)
+
+def candidateadd(request, election_id=None):
+    if request.method == "POST":
+        form = CandidateForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect(request.path) # Redirects to the same page
+    else:
+        form = CandidateForm()
+        
+    current_election, all_elections = get_election_data(election_id)
+    
+    if current_election:
+        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
+    else:
+        parties = []
+    context = {
+        'form': form,
+        'all_elections': all_elections,
+        'election': current_election,
+        'party': parties,
+    }
+    return render(request, "Modifying/candidateadd.html", context)
+
+def partyadd(request, election_id=None):
+    if request.method == "POST":
+        form = PartyForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect(request.path)
+    
+    else:
+        form = PartyForm()
+        
+    current_election, all_elections = get_election_data(election_id)
+    
+    if current_election:
+        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
+    else:
+        parties = []
+    context = {
+        'form': form,
+        'all_elections': all_elections,
+        'election': current_election,
+        'party': parties,
+    }
+    return render(request, "Modifying/partyadd.html", context)
