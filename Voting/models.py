@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from datetime import date
 
 class Party(models.Model):
     name = models.CharField(max_length=100)
@@ -16,7 +17,7 @@ class Candidate(models.Model):
     name = models.CharField(max_length=100)
     photo = models.ImageField(upload_to='candidates/%Y/%m/%d', null=True, blank=True)
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='candidates',verbose_name='Political Party')
-    bio = models.TextField(blank=True)
+    bio = models.TextField(blank=True,verbose_name='Constituency')
     class Meta:
         verbose_name_plural='CANDIDATE'
 
@@ -55,9 +56,26 @@ class Voter(models.Model):
         verbose_name_plural='VOTER'
     def __str__(self):
         return (f"{self.name}-{self.voter_id}")
+    
+    def clean(self):
+        if self.dob:
+            today = date.today()
+            age = today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
+            
+            if age < 18:
+                raise ValidationError({
+                    'dob': f"Voter must be at least 18 years old. Current age is {age}."
+                })
+                
     def save(self, *args, **kwargs):
-        if self.eligibility == "NOT ELIGIBLE":
-            pass
+        if self.dob:
+            today = date.today()
+            age = today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
+            if age >= 18:
+                self.eligibility = "ELIGIBLE"
+            else:
+                self.eligibility = "NOT ELIGIBLE"
+        
         super().save(*args, **kwargs)
    
 class Vote(models.Model):
@@ -79,12 +97,7 @@ class Vote(models.Model):
             raise ValidationError(f"Vote Denied: {self.voter.name} is NOT ELIGIBLE to vote.")
 
     def save(self, *args, **kwargs):
-        # 1. Run the clean() method to check eligibility before saving
         self.full_clean() 
-        
-        # 2. Save the Vote
         super().save(*args, **kwargs)
-        
-        # 3. Update the Voter's status
         self.voter.vote_status = "VOTED"
         self.voter.save()

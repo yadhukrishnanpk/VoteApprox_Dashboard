@@ -9,7 +9,9 @@
           <th>Flag</th>
           <th>Party Name </th>
           <th>Abbreviation</th>
+          {% if user.is_staff %}
           <th>Action</th>
+          {% endif %}
         </tr>
       </thead>
 
@@ -44,6 +46,7 @@
           </td>
           <td>{{ data.name }}</td>
           <td>{{ data.abbreviation}}</td>
+          {% if user.is_staff %}
           <td> <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
     
     <li class="nav-item" style="list-style-type: none;">
@@ -62,6 +65,7 @@
     </li>
 
 </ul></td>
+{% endif %}
         </tr>
         {% endfor %}
       </tbody>

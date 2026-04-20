@@ -3,10 +3,11 @@ from . import views
 
 
 urlpatterns = [
-    path('index/', views.index, name='index'),
-    path('election/<int:election_id>/', views.index, name='index_with_id'),
+    path('', views.index, name='index'),
+    path('election/<int:election_id>/', views.index, name='index'),
     path('votelist/', views.voters_list, name='voterslist'),
     path('candidatelist/', views.candidate_list, name='candidateslist'),
+    path('election/<int:election_id>/', views.index, name='candidateslist'),
     path('partylist/', views.party_list, name='partyslist'),
     path('elections/', views.election_list, name='electionlist'),
     
@@ -35,5 +36,15 @@ urlpatterns = [
     
     path('partyedit/<int:pk>/', views.partyedit, name='partyedit'),
     path('partydelete/<int:pk>/', views.partydelete, name='partydelete'),
+    
+    
+    path('voted/<int:election_id>/', views.votedlist, name='voted'),
+    path('set-election/<int:election_id>/', views.set_election, name='set_election'),
+    
+    path('login/', views.login, name='login'),
+    path('register/', views.register, name='register'),
+    path('logout/', views.logout, name='logout'),
+    
+    
 ]
 

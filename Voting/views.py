@@ -6,6 +6,11 @@ from django.utils import timezone
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from django.conf import settings
+from .forms import RegistrationForm
+from django.contrib import auth
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 def get_election_data(election_id):
@@ -18,39 +23,40 @@ def get_election_data(election_id):
     return current_election, all_elections
 
 def index(request, election_id=None):
-    
-    
     current_election, all_elections = get_election_data(election_id)
     
-    voter_count = Voter.objects.all().count
-    party_count = Party.objects.all().count
+    # Global counts
+    party_count = Party.objects.count()
     election_count = all_elections.count()
-    voter=Voter.objects.count()
-
+    
     if current_election:
+        # 1. Get candidates specifically associated with THIS election
         data_list = current_election.candidates.annotate(
             received_votes=Count('vote', filter=Q(vote__election=current_election))
         )
-        total_votes_in_this_election = Vote.objects.filter(election=current_election).count()
+        
+        # 2. Total votes cast in this specific election
+        total_registered_voters = Voter.objects.count()       
         candidate_count = current_election.candidates.count()
 
+        # 3. Calculate percentage based on total votes in THIS election
         for person in data_list:
-            if voter > 0:
-                # Math: (1 vote / 100 total voters) * 100 = 1%
-                person.vote_percentage = round(float(person.received_votes), 1)
+            if total_registered_voters > 0:
+                # Math: (1 vote / 100 total voters) * 100 = 1.0%
+                percentage = (person.received_votes / total_registered_voters) * 100
+                person.vote_percentage = round(float(percentage), 1)
             else:
                 person.vote_percentage = 0
     else:
         data_list = []
-        total_votes_in_this_election = 0
+        total_registered_voters = 0
         candidate_count = 0
 
     context = {
         'election': current_election,
         'all_elections': all_elections,
         'data_list': data_list,
-        'vote_count': total_votes_in_this_election, 
-        'voter_count': voter_count,
+        'vote_count': total_registered_voters, 
         'party_count': party_count,
         'candidate_count': candidate_count,
         'election_count': election_count,
@@ -59,8 +65,7 @@ def index(request, election_id=None):
 
 def voters_list(request, election_id=None):
     current_election, all_elections = get_election_data(election_id)
-    
-    # Get EVERY voter in the database
+
     voters = Voter.objects.all().prefetch_related('vote_set__candidate__party')
     
     for voter in voters:
@@ -139,7 +144,7 @@ def election_list(request):
 
 
 # MODIFYING
-
+@staff_member_required
 def vote_cast(request, election_id=None):
     if request.method == "POST":
         form = VotingForm(request.POST, request.FILES)
@@ -163,6 +168,7 @@ def vote_cast(request, election_id=None):
     }
     return render(request, "Modifying/voting.html", context)
 
+@staff_member_required
 def Electionadd(request, election_id=None):
     if request.method == "POST":
         form = ElectionForm(request.POST, request.FILES)
@@ -186,6 +192,7 @@ def Electionadd(request, election_id=None):
     }
     return render(request, "Modifying/electionadd.html", context)
 
+@staff_member_required
 def votersadd(request, election_id=None):
     if request.method == "POST":
         form = VoterForm(request.POST, request.FILES)
@@ -209,6 +216,7 @@ def votersadd(request, election_id=None):
     }
     return render(request, "Modifying/votersadd.html", context)
 
+@staff_member_required
 def candidateadd(request, election_id=None):
     if request.method == "POST":
         form = CandidateForm(request.POST, request.FILES)
@@ -232,6 +240,7 @@ def candidateadd(request, election_id=None):
     }
     return render(request, "Modifying/candidateadd.html", context)
 
+@staff_member_required
 def partyadd(request, election_id=None):
     if request.method == "POST":
         form = PartyForm(request.POST, request.FILES)
@@ -256,6 +265,7 @@ def partyadd(request, election_id=None):
     }
     return render(request, "Modifying/partyadd.html", context)
 
+@staff_member_required
 def Electionedit(request, pk):
     instance= get_object_or_404(Election, pk=pk)
     if request.method == "POST":
@@ -269,11 +279,13 @@ def Electionedit(request, pk):
     }
     return render(request, "Modifying/electionedit.html", context)
 
+@staff_member_required
 def ElectionDelete(request,pk):
     instance=get_object_or_404(Election,pk=pk)
     instance.delete()
     return redirect('electionlist')
 
+@staff_member_required
 def Voteredit(request, pk):
     instance= get_object_or_404(Voter, pk=pk)
     if request.method == "POST":
@@ -287,12 +299,13 @@ def Voteredit(request, pk):
     }
     return render(request, "Modifying/voteredit.html", context)
 
+@staff_member_required
 def voterDelete(request,pk):
     instance=get_object_or_404(Voter,pk=pk)
     instance.delete()
     return redirect('voterslist')
 
-
+@staff_member_required
 def candidateedit(request, pk):
     instance= get_object_or_404(Candidate, pk=pk)
     if request.method == "POST":
@@ -306,13 +319,14 @@ def candidateedit(request, pk):
     }
     return render(request, "Modifying/candidateedit.html", context)
 
+@staff_member_required
 def candidateDelete(request,pk):
     instance=get_object_or_404(Candidate,pk=pk)
     instance.delete()
     return redirect('candidateslist')
 
 
-
+@staff_member_required
 def partyedit(request, pk):
     instance= get_object_or_404(Party, pk=pk)
     if request.method == "POST":
@@ -326,7 +340,74 @@ def partyedit(request, pk):
     }
     return render(request, "Modifying/partyedit.html", context)
 
+@staff_member_required
 def partydelete(request,pk):
     instance=get_object_or_404(Party,pk=pk)
     instance.delete()
     return redirect('partyslist')
+
+@staff_member_required
+def votedlist(request,election_id=None):
+    election = get_object_or_404(Election, id=election_id)
+    
+    voted_voter_ids = Vote.objects.filter(election=election).values_list('voter_id', flat=True)
+    voted_voters = Voter.objects.filter(id__in=voted_voter_ids)
+
+    not_voted_voters = Voter.objects.exclude(id__in=voted_voter_ids)
+    current_election, all_elections = get_election_data(election_id)
+    
+    if current_election:
+        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
+    else:
+        parties = []
+
+    context = {
+        'election': election,
+        'voted_voters': voted_voters,
+        'not_voted_voters': not_voted_voters,
+        'all_elections': all_elections,
+        'elections': current_election,
+    }
+    return render(request, "Modifying/voted.html", context)
+
+def set_election(request, election_id):
+    # Store the election_id in the session
+    request.session['selected_election_id'] = election_id
+    # Redirect back to the page the user was on
+    return redirect(request.META.get('HTTP_REFERER', 'index'))
+
+def register(request):
+    if request.method == 'POST':
+        form =RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+     form = RegistrationForm()
+    context ={
+        'form': form,
+    }
+    return render(request, "register.html", context)
+
+def login(request):
+    if request.method =='POST':
+        form = AuthenticationForm(request,request.POST)
+        if form.is_valid():
+            username =form.cleaned_data['username']
+            password =form.cleaned_data['password']
+
+            user =auth.authenticate(username=username,password=password)
+            if user is not None:
+                auth.login(request, user)
+            return redirect('index')
+        return redirect('register')
+        
+    form = AuthenticationForm()
+    context={
+        'form': form,
+    }
+    return render(request, "login.html", context)
+
+def logout(request):
+    auth.logout(request)
+    return redirect('index')

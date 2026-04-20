@@ -1,6 +1,7 @@
 from django import forms
 from .models import Vote,Election,Candidate,Voter,Party
-
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
     
 class VotingForm(forms.ModelForm):
     class Meta:
@@ -78,7 +79,7 @@ class CandidateForm(forms.ModelForm):
             'bio': forms.Textarea(attrs={
                 'rows': 1, 
                 'style': 'resize:none;', 
-                'placeholder': 'Enter a short bio...'
+                'placeholder': 'Enter Constituency...'
             }),
         }
         
@@ -87,8 +88,10 @@ class PartyForm(forms.ModelForm):
         model = Party
         fields = '__all__'
         
-        
-        
+class RegistrationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields= ('email', 'username','password1','password2')
         
                 
         

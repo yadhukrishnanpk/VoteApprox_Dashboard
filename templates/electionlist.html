@@ -12,7 +12,9 @@
                     <th>End Date</th>
                     <th>Status</th>
                     <th>View</th>
+                    {% if user.is_staff %}
                     <th>Action</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -32,12 +34,12 @@
                             {% endif %}
                         </td>
                         <td>
-                        <a href="{% url 'index_with_id' e.id %}" class="btn btn-sm btn-primary">
+                        <a href="{% url 'index' e.id %}" class="btn btn-sm btn-primary">
                            Dashboard
                         </a>
                     </td>
                     <td> <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
-    
+    {% if user.is_staff %}
     <li class="nav-item" style="list-style-type: none;">
         <a class="nav-link small" 
            href="{% url 'electionedit' e.id %}" 
@@ -52,6 +54,7 @@
             <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
         </a>
     </li>
+    {% endif %}
 
 </ul></td>
                 </tr>

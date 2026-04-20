@@ -1,0 +1,133 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="dropdown">
+                <button class="nav-link border-0 bg-transparent d-flex align-items-center dropdown-toggle w-100" 
+                        type="button" 
+                        data-bs-toggle="dropdown" 
+                        style="
+                            font-size: 24px; 
+                            text-align: left; 
+                            color: rgba(0, 0, 0, 0.7);
+                            font-weight: 500;
+                        ">
+                    <i class="bi bi-check2-circle me-2"></i> 
+                    <span style="vertical-align: middle">
+                        {% if election %}{{ election.title }}-DASHBOARD {% else %}SELECT ELECTION{% endif %}
+                    </span>
+                </button>
+                <ul class="dropdown-menu shadow-sm" style="font-size: 12px; min-width: 180px;">
+                    {% for e in all_elections %}
+                    <li>
+                        <a class="dropdown-item py-1" href="{% url 'voted' e.id %}">
+                            {{ e.title }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+        
+            </div><br>
+    </div>
+
+    <div class="card shadow border-0 p-4 mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="text-success"><i class="bi bi-check-circle-fill"></i> Voted List</h5>
+            <span class="badge bg-success">{{ voted_voters.count }} Voted</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>No</th>
+                        <th>Photo</th>
+                        <th>Voter ID</th>
+                        <th>Voter Name</th>
+                        <th>Voted For</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for voter in voted_voters %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            {% if voter.voter_photo %}
+                                <img src="{{ voter.voter_photo.url }}" style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%;">
+                            {% else %}
+                                <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                    <i class="bi bi-person text-secondary"></i>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>{{ voter.voter_id }}</td>
+                        <td><strong>{{ voter.name }}</strong></td>
+                        <td>
+                           
+                            {% with voter.vote_set.all|dictsort:"timestamp"|last as last_vote %}
+                                <span class="badge bg-warning-subtle text-dark border border-warning-subtle">
+                                    {{ last_vote.candidate.name }} ({{ last_vote.candidate.party }})
+                                </span>
+                            {% endwith %}
+                        </td>
+                        <td><span class="badge bg-success">VOTED</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center text-muted">No one has voted yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow border-0 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="text-danger"><i class="bi bi-x-circle-fill"></i> Not Voted List</h5>
+            <span class="badge bg-danger">{{ not_voted_voters.count }} Pending</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>No</th>
+                        <th>Photo</th>
+                        <th>Voter ID</th>
+                        <th>Voter Name</th>
+                        <th>Eligibility</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for voter in not_voted_voters %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            {% if voter.voter_photo %}
+                                <img src="{{ voter.voter_photo.url }}" style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%;">
+                            {% else %}
+                                <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                    <i class="bi bi-person text-secondary"></i>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>{{ voter.voter_id }}</td>
+                        <td>{{ voter.name }}</td>
+                        <td>
+                            {% if voter.eligibility == "ELIGIBLE" %}
+                                <span class="text-success small"><i class="bi bi-patch-check"></i> Eligible</span>
+                            {% else %}
+                                <span class="text-danger small"><i class="bi bi-patch-exclamation"></i> {{ voter.eligibility }}</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge bg-secondary-subtle text-dark">NOT VOTED</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center text-muted">Everyone has voted!</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
