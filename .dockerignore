@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+env
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Django Data (Crucial for SQLite)
+db.sqlite3
+media/
+static/
+# (Note: We ignore local 'static' because 'collectstatic' usually runs inside Docker)
+
+# Environment & Secrets
+.env
+.venv
+.docker-compose.override.yml
+
+# Docker-specific
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# OS metadata
+.DS_Store
+Thumbs.db
