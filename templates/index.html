@@ -196,6 +196,7 @@
                 </ul>
         
             </div><br>
+            {% if user.is_authenticated %}
             <div class="row mb-4">
                 <div class="col-xl-3 col-md-6 mb-4">
                     <div class="card card-stat bg-primary text-white shadow p-3">
@@ -242,7 +243,7 @@
                     </div>
                 </div>
             </div>
-
+            {% endif %}
             <div class="card shadow border-0 p-4">
                 <h5 class="mb-4">Dashboard</h5>
                 <div class="table-responsive">
