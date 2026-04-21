@@ -13,7 +13,7 @@
                             <th>Photo</th>
                             <th style="text-align:center;">Voter ID</th>
                             <th>Voter Name</th>
-                            {% if user.is_staff %}
+                            {% if user.is_authenticated %}
                             <th>DOB</th>
                             <th>Voted For</th>   
                             <th>Party</th>       
@@ -69,7 +69,7 @@
         </td>
         <td>
            <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
-    
+    {% if user.is_authenticated %}
     <li class="nav-item" style="list-style-type: none;">
         <a class="nav-link small" 
            href="{% url 'voteredit' data.id %}" 
@@ -84,7 +84,7 @@
             <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
         </a>
     </li>
-
+{% endif %}
 </ul>
         </td>
     </tr>

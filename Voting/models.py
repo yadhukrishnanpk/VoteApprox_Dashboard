@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from datetime import date
 
 class Party(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     photo = models.ImageField(upload_to='party/%Y/%m/%d', null=True, blank=True)
     abbreviation = models.CharField(max_length=200)
@@ -14,6 +15,7 @@ class Party(models.Model):
         return self.name
 
 class Candidate(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     photo = models.ImageField(upload_to='candidates/%Y/%m/%d', null=True, blank=True)
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='candidates',verbose_name='Political Party')
@@ -25,6 +27,7 @@ class Candidate(models.Model):
         return self.name
 
 class Election(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     start_date = models.DateField()
     end_date = models.DateField()
@@ -46,6 +49,7 @@ CHOICES=(
     ("NOT ELIGIBLE","NOT ELIGIBLE")
 )
 class Voter(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     voter_photo= models.ImageField(upload_to='voter/%Y/%m/%d',blank=True, null=True)
     voter_id = models.CharField(max_length=200, unique=True,db_index=True, help_text="Enter the unique National Voter ID number")

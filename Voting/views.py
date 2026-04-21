@@ -1,7 +1,7 @@
-from django.shortcuts import render, get_object_or_404,redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Candidate, Vote, Voter, Party, Election
 from django.db.models import Count, Q
-from .forms import VotingForm,VoterForm,ElectionForm,CandidateForm,PartyForm
+from .forms import VotingForm, VoterForm, ElectionForm, CandidateForm, PartyForm
 from django.utils import timezone
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -11,38 +11,35 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 
-
-def get_election_data(election_id):
-    
-    all_elections = Election.objects.all()
+# Helper to filter election data by user
+def get_election_data(request, election_id):
+    # Only show elections belonging to the logged-in user
+    all_elections = Election.objects.filter(user=request.user)
     if election_id:
-        current_election = get_object_or_404(Election, id=election_id)
+        current_election = get_object_or_404(Election, id=election_id, user=request.user)
     else:
         current_election = all_elections.first()
     return current_election, all_elections
 
+@login_required
 def index(request, election_id=None):
-    current_election, all_elections = get_election_data(election_id)
+    current_election, all_elections = get_election_data(request, election_id)
     
-    # Global counts
-    party_count = Party.objects.count()
+    # Isolated counts
+    party_count = Party.objects.filter(user=request.user).count()
     election_count = all_elections.count()
     
     if current_election:
-        # 1. Get candidates specifically associated with THIS election
         data_list = current_election.candidates.annotate(
             received_votes=Count('vote', filter=Q(vote__election=current_election))
         )
-        
-        # 2. Total votes cast in this specific election
-        total_registered_voters = Voter.objects.count()       
+        total_registered_voters = Voter.objects.filter(user=request.user).count()       
         candidate_count = current_election.candidates.count()
 
-        # 3. Calculate percentage based on total votes in THIS election
         for person in data_list:
             if total_registered_voters > 0:
-                # Math: (1 vote / 100 total voters) * 100 = 1.0%
                 percentage = (person.received_votes / total_registered_voters) * 100
                 person.vote_percentage = round(float(percentage), 1)
             else:
@@ -63,13 +60,12 @@ def index(request, election_id=None):
     }
     return render(request, "index.html", context)
 
+@login_required
 def voters_list(request, election_id=None):
-    current_election, all_elections = get_election_data(election_id)
-
-    voters = Voter.objects.all().prefetch_related('vote_set__candidate__party')
+    current_election, all_elections = get_election_data(request, election_id)
+    voters = Voter.objects.filter(user=request.user).prefetch_related('vote_set__candidate__party')
     
     for voter in voters:
-    
         vote_record = voter.vote_set.filter(election=current_election).first()
         if vote_record:
             voter.voted_for_party = vote_record.candidate.party.name
@@ -84,15 +80,12 @@ def voters_list(request, election_id=None):
         'election': current_election
     })
 
+@login_required
 def candidate_list(request, election_id=None):
-    addcandidate=Candidate.objects.all()
-    current_election, all_elections = get_election_data(election_id)
+    addcandidate = Candidate.objects.filter(user=request.user)
+    current_election, all_elections = get_election_data(request, election_id)
     
-   
-    if current_election:
-        candidates = current_election.candidates.all()
-    else:
-        candidates = []
+    candidates = current_election.candidates.all() if current_election else []
     
     context = {
         'all_elections': all_elections,
@@ -102,13 +95,13 @@ def candidate_list(request, election_id=None):
     }
     return render(request, "candidatelist.html", context)
 
+@login_required
 def party_list(request, election_id=None):
-    addparty=Party.objects.all()
-    current_election, all_elections = get_election_data(election_id)
+    addparty = Party.objects.filter(user=request.user)
+    current_election, all_elections = get_election_data(request, election_id)
     
     if current_election:
-      
-        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
+        parties = Party.objects.filter(user=request.user, candidates__in=current_election.candidates.all()).distinct()
     else:
         parties = []
     
@@ -117,12 +110,12 @@ def party_list(request, election_id=None):
         'election': current_election,
         'party': parties,
         'add': addparty,
-        
     }
     return render(request, "partylist.html", context)
 
+@login_required
 def election_list(request):
-    all_elections = Election.objects.all()
+    all_elections = Election.objects.filter(user=request.user)
     current_time = timezone.now()
     user_tz = ZoneInfo(settings.TIME_ZONE)
     for e in all_elections:
@@ -141,226 +134,199 @@ def election_list(request):
     }
     return render(request, "electionlist.html", context)
 
-
-
-# MODIFYING
-@staff_member_required
+# MODIFYING VIEWS
+@login_required
 def vote_cast(request, election_id=None):
     if request.method == "POST":
-        form = VotingForm(request.POST, request.FILES)
+        form = VotingForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             form.save()
-            return redirect(request.path) # Redirects to the same page
+            return redirect(request.path)
     else:
-        form = VotingForm()
+        form = VotingForm(user=request.user)
         
-    current_election, all_elections = get_election_data(election_id)
-    
-    if current_election:
-        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
-    else:
-        parties = []
-    context = {
-        'form': form,
-        'all_elections': all_elections,
-        'election': current_election,
-        'party': parties,
-    }
+    current_election, all_elections = get_election_data(request, election_id)
+    parties = Party.objects.filter(user=request.user, candidates__in=current_election.candidates.all()).distinct() if current_election else []
+
+    context = {'form': form, 'all_elections': all_elections, 'election': current_election, 'party': parties}
     return render(request, "Modifying/voting.html", context)
 
-@staff_member_required
+@login_required
 def Electionadd(request, election_id=None):
     if request.method == "POST":
-        form = ElectionForm(request.POST, request.FILES)
+        form = ElectionForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
-            form.save()
-            return redirect(request.path) # Redirects to the same page
+            election = form.save(commit=False)
+            election.user = request.user
+            election.save()
+            form.save_m2m() # Important for ManyToMany candidates
+            return redirect(request.path)
     else:
-        form = ElectionForm()
+        form = ElectionForm(user=request.user)
         
-    current_election, all_elections = get_election_data(election_id)
-    
-    if current_election:
-        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
-    else:
-        parties = []
-    context = {
-        'form': form,
-        'all_elections': all_elections,
-        'election': current_election,
-        'party': parties,
-    }
+    current_election, all_elections = get_election_data(request, election_id)
+    context = {'form': form, 'all_elections': all_elections, 'election': current_election}
     return render(request, "Modifying/electionadd.html", context)
 
-@staff_member_required
+@login_required
 def votersadd(request, election_id=None):
     if request.method == "POST":
         form = VoterForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            voter = form.save(commit=False)
+            voter.user = request.user
+            voter.save()
             return redirect(request.path)
     else:
         form = VoterForm()
         
-    current_election, all_elections = get_election_data(election_id)
-    
-    if current_election:
-        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
-    else:
-        parties = []
-    context = {
-        'form': form,
-        'all_elections': all_elections,
-        'election': current_election,
-        'party': parties,
-    }
+    current_election, all_elections = get_election_data(request, election_id)
+    context = {'form': form, 'all_elections': all_elections, 'election': current_election}
     return render(request, "Modifying/votersadd.html", context)
 
-@staff_member_required
+@login_required
 def candidateadd(request, election_id=None):
     if request.method == "POST":
-        form = CandidateForm(request.POST, request.FILES)
+        form = CandidateForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
-            form.save()
-            return redirect(request.path) # Redirects to the same page
+            candidate = form.save(commit=False)
+            candidate.user = request.user
+            candidate.save()
+            return redirect(request.path)
     else:
-        form = CandidateForm()
+        form = CandidateForm(user=request.user)
         
-    current_election, all_elections = get_election_data(election_id)
-    
-    if current_election:
-        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
-    else:
-        parties = []
-    context = {
-        'form': form,
-        'all_elections': all_elections,
-        'election': current_election,
-        'party': parties,
-    }
+    current_election, all_elections = get_election_data(request, election_id)
+    context = {'form': form, 'all_elections': all_elections, 'election': current_election}
     return render(request, "Modifying/candidateadd.html", context)
 
-@staff_member_required
+@login_required
 def partyadd(request, election_id=None):
     if request.method == "POST":
         form = PartyForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            party = form.save(commit=False)
+            party.user = request.user
+            party.save()
             return redirect(request.path)
-    
     else:
         form = PartyForm()
         
-    current_election, all_elections = get_election_data(election_id)
-    
-    if current_election:
-        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
-    else:
-        parties = []
-    context = {
-        'form': form,
-        'all_elections': all_elections,
-        'election': current_election,
-        'party': parties,
-    }
+    current_election, all_elections = get_election_data(request, election_id)
+    context = {'form': form, 'all_elections': all_elections, 'election': current_election}
     return render(request, "Modifying/partyadd.html", context)
 
-@staff_member_required
+@login_required
 def Electionedit(request, pk):
-    instance= get_object_or_404(Election, pk=pk)
+    instance = get_object_or_404(Election, pk=pk, user=request.user)
     if request.method == "POST":
-        edit=ElectionForm(request.POST, instance=instance)
+        edit = ElectionForm(request.POST, instance=instance, user=request.user)
         if edit.is_valid():
             edit.save()
             return redirect('electionlist')
-    edit=ElectionForm(instance=instance)
-    context={
-        'form': edit
-    }
-    return render(request, "Modifying/electionedit.html", context)
+    else:
+        edit = ElectionForm(instance=instance, user=request.user)
+    return render(request, "Modifying/electionedit.html", {'form': edit})
 
-@staff_member_required
-def ElectionDelete(request,pk):
-    instance=get_object_or_404(Election,pk=pk)
+@login_required
+def ElectionDelete(request, pk):
+    instance = get_object_or_404(Election, pk=pk, user=request.user)
     instance.delete()
     return redirect('electionlist')
 
-@staff_member_required
+@login_required
 def Voteredit(request, pk):
-    instance= get_object_or_404(Voter, pk=pk)
+    # Ensure the voter belongs to the logged-in user
+    instance = get_object_or_404(Voter, pk=pk, user=request.user)
+    
     if request.method == "POST":
-        edit=VoterForm(request.POST, request.FILES, instance=instance)
+        # No 'user' argument needed here as VoterForm doesn't filter foreign keys
+        edit = VoterForm(request.POST, request.FILES, instance=instance)
         if edit.is_valid():
             edit.save()
             return redirect('voterslist')
-    edit=VoterForm(instance=instance)
-    context={
-        'form': edit
+    else:
+        edit = VoterForm(instance=instance)
+        
+    context = {
+        'form': edit,
+        'instance': instance
     }
     return render(request, "Modifying/voteredit.html", context)
 
-@staff_member_required
-def voterDelete(request,pk):
-    instance=get_object_or_404(Voter,pk=pk)
-    instance.delete()
-    return redirect('voterslist')
-
-@staff_member_required
-def candidateedit(request, pk):
-    instance= get_object_or_404(Candidate, pk=pk)
-    if request.method == "POST":
-        edit=CandidateForm(request.POST, request.FILES, instance=instance)
-        if edit.is_valid():
-            edit.save()
-            return redirect('candidateslist')
-    edit=CandidateForm(instance=instance)
-    context={
-        'form': edit
-    }
-    return render(request, "Modifying/candidateedit.html", context)
-
-@staff_member_required
-def candidateDelete(request,pk):
-    instance=get_object_or_404(Candidate,pk=pk)
-    instance.delete()
-    return redirect('candidateslist')
-
-
-@staff_member_required
+@login_required
 def partyedit(request, pk):
-    instance= get_object_or_404(Party, pk=pk)
+    # Ensure the party belongs to the logged-in user
+    instance = get_object_or_404(Party, pk=pk, user=request.user)
+    
     if request.method == "POST":
-        edit=PartyForm(request.POST, request.FILES, instance=instance)
+        # No 'user' argument needed here as PartyForm doesn't filter foreign keys
+        edit = PartyForm(request.POST, request.FILES, instance=instance)
         if edit.is_valid():
             edit.save()
             return redirect('partyslist')
-    edit=PartyForm(instance=instance)
-    context={
-        'form': edit
+    else:
+        edit = PartyForm(instance=instance)
+        
+    context = {
+        'form': edit,
+        'instance': instance
     }
     return render(request, "Modifying/partyedit.html", context)
 
-@staff_member_required
-def partydelete(request,pk):
-    instance=get_object_or_404(Party,pk=pk)
+@login_required
+def voterDelete(request, pk):
+    # The user=request.user filter ensures you can only delete YOUR voters
+    instance = get_object_or_404(Voter, pk=pk, user=request.user)
+    instance.delete()
+    return redirect('voterslist')
+
+@login_required
+def partydelete(request, pk):
+    # The user=request.user filter ensures you can only delete YOUR parties
+    instance = get_object_or_404(Party, pk=pk, user=request.user)
     instance.delete()
     return redirect('partyslist')
 
-@staff_member_required
-def votedlist(request,election_id=None):
-    election = get_object_or_404(Election, id=election_id)
+@login_required
+def candidateedit(request, pk):
+    # Security: Ensure the candidate belongs to the logged-in user
+    instance = get_object_or_404(Candidate, pk=pk, user=request.user)
     
-    voted_voter_ids = Vote.objects.filter(election=election).values_list('voter_id', flat=True)
-    voted_voters = Voter.objects.filter(id__in=voted_voter_ids)
-
-    not_voted_voters = Voter.objects.exclude(id__in=voted_voter_ids)
-    current_election, all_elections = get_election_data(election_id)
-    
-    if current_election:
-        parties = Party.objects.filter(candidates__in=current_election.candidates.all()).distinct()
+    if request.method == "POST":
+        # Pass user=request.user to the form so the Party dropdown is filtered
+        edit = CandidateForm(request.POST, request.FILES, instance=instance, user=request.user)
+        if edit.is_valid():
+            edit.save()
+            return redirect('candidateslist')
     else:
-        parties = []
+        # Pass user=request.user here too for the GET request
+        edit = CandidateForm(instance=instance, user=request.user)
+    
+    context = {
+        'form': edit,
+        'instance': instance
+    }
+    return render(request, "Modifying/candidateedit.html", context)
 
+@login_required
+def candidateDelete(request, pk):
+    # Security: Only allow deletion if the candidate belongs to the logged-in user
+    instance = get_object_or_404(Candidate, pk=pk, user=request.user)
+    instance.delete()
+    return redirect('candidateslist')
+
+@login_required
+def votedlist(request, election_id=None):
+    election = get_object_or_404(Election, id=election_id, user=request.user)
+    voted_voter_ids = Vote.objects.filter(election=election).values_list('voter_id', flat=True)
+    
+    # Filter voters by current user
+    voted_voters = Voter.objects.filter(id__in=voted_voter_ids, user=request.user)
+    not_voted_voters = Voter.objects.filter(user=request.user).exclude(id__in=voted_voter_ids)
+    
+    current_election, all_elections = get_election_data(request, election_id)
+    
     context = {
         'election': election,
         'voted_voters': voted_voters,
@@ -369,6 +335,7 @@ def votedlist(request,election_id=None):
         'elections': current_election,
     }
     return render(request, "Modifying/voted.html", context)
+
 
 def set_election(request, election_id):
     # Store the election_id in the session

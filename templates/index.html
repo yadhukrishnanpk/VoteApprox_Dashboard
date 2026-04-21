@@ -54,7 +54,7 @@
     </a>
 {% endif %}
 
-    {% if user.is_staff %}
+    {% if user.is_authenticated %}
     <ul class="nav flex-column ms-3 mt-1">
         <li class="nav-item">
             <a class="nav-link small {% if request.resolver_match.url_name == 'electionadd' %}active{% endif %}" href="{% url 'electionadd' %}">
@@ -80,7 +80,7 @@
         </li>
         {% endif %}
 
-        {% if user.is_staff and election %}
+        {% if user.is_authenticated and election %}
         <li class="nav-item">
             <a class="nav-link small {% if request.resolver_match.url_name == 'voted' %}active{% endif %}" 
                href="{% url 'voted' election_id=election.id %}">
@@ -98,7 +98,7 @@
         </a>
         {% endif %}
         <ul class="nav flex-column ms-3 mt-1">
-            {% if user.is_staff %}
+            {% if user.is_authenticated %}
             <li class="nav-item">
                 <a class="nav-link small {% if request.resolver_match.url_name == 'candidateadd' %}active{% endif %}" href="{% url 'candidateadd' %}">
                     <i class="bi bi-plus-circle me-2"></i> Add
@@ -115,7 +115,7 @@
         </a>
         {% endif %}
         <ul class="nav flex-column ms-3 mt-1">
-            {% if user.is_staff %}
+            {% if user.is_authenticated %}
             <li class="nav-item">
                 <a class="nav-link small {% if request.resolver_match.url_name == 'partyadd' %}active{% endif %}" href="{% url 'partyadd' %}">
                     <i class="bi bi-plus-circle me-2"></i> Add
@@ -124,7 +124,7 @@
             {% endif %}
         </ul>
     </li>
-    {% if user.is_staff %}
+    {% if user.is_authenticated %}
    <li class="nav-item" style="list-style: none; display: flex; justify-content: center; margin: 15px 0;">
     <a class="nav-link small {% if request.resolver_match.url_name == 'castlist' %}active{% endif %}" 
        href="{% url 'castlist' %}"
@@ -144,7 +144,7 @@
                 <div class="btn-toolbar mb-2 mb-md-0">
     {% if user.is_authenticated %}
         
-        {% if user.is_staff %}
+        {% if user.is_authenticated %}
             <a href="{% url 'index' %}" style="text-decoration:none;">
                 <button type="button" class="btn btn-sm btn-outline-secondary">DASHBOARD</button>
             </a>&nbsp;
