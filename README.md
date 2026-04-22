@@ -47,4 +47,12 @@ During an election, party booth agents often mark tallies on paper as voters cas
 | **Field Operations** | `voting.html`, `voted.html` (Mobilization list) |
 
 ---
+### 🐳 Containerization Assets
+The following files are included for containerized environments:
+* `Dockerfile` – Defines the application image and runtime environment.
+* `docker-compose.yml` – Orchestrates the application services and dependencies.
+* `requirement.txt` – Lists the specific dependencies bundled during the build.
+* `.dockerignore` – Ensures build efficiency by excluding unnecessary local files.
+---
+
 **Disclaimer:** *Voteapprox is a tool for internal party logistics and trend estimation. It is not an official government voting portal and does not interface with official election results.*
