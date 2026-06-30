@@ -14,4 +14,8 @@ COPY . /app/
 
 RUN python manage.py collectstatic --noinput
 
+RUN python manage.py migrate
+
+RUN python create_superuser.py
+
 CMD ["gunicorn", "Election.wsgi:application", "--bind", "0.0.0.0:8000"]
