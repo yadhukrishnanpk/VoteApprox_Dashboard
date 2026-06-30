@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-jo=d$smm#9g2a1-mi*xhp57pj8$^_7e)y25w!k0&n7irm)qt7)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['voteapprox-dashboard.onrender.com', '*.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
