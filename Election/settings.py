@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-jo=d$smm#9g2a1-mi*xhp57pj8$^_7e)y25w!k0&n7irm)qt7)
 
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = ['voteapprox-dashboard.onrender.com', '*.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['voteapprox-dashboard.onrender.com', '.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -42,9 +43,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 if not DEBUG:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
-    WHITENOISE_MANIFEST_STRICT = False
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        },
+    }
 
 ROOT_URLCONF = 'Election.urls'
 
