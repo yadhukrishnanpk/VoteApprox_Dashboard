@@ -13,16 +13,25 @@
             background-color: #f8f9fa; 
         }
         .sidebar { 
-            min-height: 100vh; 
             background: #212529; 
             color: white; 
+        }
+        @media (min-width: 768px) {
+            .sidebar {
+                min-height: 100vh;
+            }
         }
         .sidebar .nav-link { 
             color: rgba(255,255,255,0.7); 
         }
+        .sidebar .nav-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
         .sidebar .nav-link.active { 
             color: white; 
-            background: #9c9a9aad; 
+            background: rgba(156, 154, 154, 0.68); 
             border-radius: 5px; 
         }
         .card-stat { 
@@ -37,11 +46,25 @@
 </head>
 <body>
 
+<!-- Mobile Header Navigation Bar -->
+<header class="navbar navbar-dark sticky-top bg-dark p-0 shadow d-md-none">
+    <div class="container-fluid d-flex align-items-center justify-content-between py-2">
+        <a class="navbar-brand fs-5 d-inline-flex align-items-center m-0 p-0" href="{% url 'index' %}">
+            <i class="fas fa-vote-yea me-2 text-primary"></i>
+            <span>VoteApprox</span>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</header>
+
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar Navigation -->
-        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
-            <h4 class="text-left mb-4">
+        <!-- Sidebar Navigation Area -->
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
+            <h4 class="text-left mb-4 d-none d-md-block">
                 <i class="fas fa-vote-yea me-2 text-primary"></i>VoteApprox
             </h4>
             <ul class="nav flex-column">
@@ -64,8 +87,7 @@
                         </li>
                         {% if election %}
                         <li class="nav-item">
-                            <a class="nav-link small {% if request.resolver_match.url_name == 'voted' %}active{% endif %}" 
-                               href="{% url 'voted' election_id=election.id %}">
+                            <a class="nav-link small {% if request.resolver_match.url_name == 'voted' %}active{% endif %}" href="{% url 'voted' election_id=election.id %}">
                                 <i class="bi bi-person-check-fill me-2"></i> Voted Status List
                             </a>
                         </li>
@@ -124,7 +146,7 @@
                 {% endif %}
                 
                 {% if user.is_authenticated %}
-                <li class="nav-item" style="list-style: none; display: flex; justify-content: center; margin: 15px 0;">
+                <li class="nav-item my-3 d-flex justify-content-center">
                     <a class="nav-link small {% if request.resolver_match.url_name == 'castlist' %}active{% endif %}" 
                        href="{% url 'castlist' %}"
                        style="display: inline-flex; align-items: center; padding: 10px 20px; background-color: #166908; color: white; border-radius: 50px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
@@ -135,78 +157,53 @@
             </ul>
         </nav>
 
-        <!-- Main Content Area -->
+        <!-- Main Content Area Component -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <div class="d-flex align-items-center">
+            
+            <!-- Flexible Top bar Header component -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pt-3 pb-2 mb-3 border-bottom gap-3">
+                <div class="d-flex flex-wrap gap-2 align-items-center justify-content-start flex-grow-1">
                     {% if user.is_authenticated %}
                         {% if election.id %}
-                        <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start my-3">
-                            
                             <a href="{% url 'partyslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
                                 <i class="bi bi-flag me-1"></i> POLITICAL PARTY LIST
                             </a>
-                            
                             <a href="{% url 'candidateslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
                                 <i class="bi bi-people me-1"></i> CANDIDATE LIST
                             </a>
-                            
                             <a href="{% url 'voterslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
                                 <i class="bi bi-card-list me-1"></i> VOTER LIST
                             </a>
-                            
-                            {% if election.id %}
-                                <a href="{% url 'voted' election.id %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
-                                    <i class="bi bi-check2-square me-1"></i> VOTING STATUS
-                                </a>
-                                <a href="{% url 'electionlist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
-                                <i class="bi bi-box-seam me-1"></i> ELECTION LIST
-                            </a>
-                            {% else %}
-                               <a href="{% url 'partyslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
-                                <i class="bi bi-flag me-1"></i> POLITICAL PARTY LIST
-                            </a>
-                            
-                            <a href="{% url 'candidateslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
-                                <i class="bi bi-people me-1"></i> CANDIDATE LIST
-                            </a>
-                            
-                            <a href="{% url 'voterslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
-                                <i class="bi bi-card-list me-1"></i> VOTER LIST
+                            <a href="{% url 'voted' election.id %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
+                                <i class="bi bi-check2-square me-1"></i> VOTING STATUS
                             </a>
                             <a href="{% url 'electionlist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
                                 <i class="bi bi-box-seam me-1"></i> ELECTION LIST
                             </a>
-                            {% endif %}
-                        </div>
                         {% else %}
-                            <div class="d-flex flex-wrap gap-2">
-                            <a href="{% url 'partyslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
-                                <i class="bi bi-flag me-1"></i> POLITICAL PARTY LIST
+                            <a href="{% url 'partyadd' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
+                                <i class="bi bi-flag me-1"></i> ADD POLITICAL PARTY
                             </a>
-                            
-                            <a href="{% url 'candidateslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
-                                <i class="bi bi-people me-1"></i> CANDIDATE LIST
+                            <a href="{% url 'candidateadd' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
+                                <i class="bi bi-people me-1"></i> ADD CANDIDATE
                             </a>
-                            
-                            <a href="{% url 'voterslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
-                                <i class="bi bi-card-list me-1"></i> VOTER LIST
+                            <a href="{% url 'votersadd' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
+                                <i class="bi bi-card-list me-1"></i> ADD VOTER
                             </a>
-                            
-                            <a href="{% url 'electionlist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
-                                <i class="bi bi-box-seam me-1"></i> ELECTION LIST
+                            <a href="{% url 'electionadd' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
+                                <i class="bi bi-box-seam me-1"></i> ADD ELECTION
                             </a>
-                        </div>
                         {% endif %}
                     {% else %}
-                        <a href="{% url 'login' %}" class="btn text-secondary btn-sm">LOGIN FOR VOTING STATUS</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-sm px-3">LOGIN FOR VOTING STATUS</a>
                     {% endif %}
                 </div>
-                <!-- Action Button that triggers the Popup Modal -->
-                <div class="btn-toolbar d-flex gap-2 mb-2 mb-md-0">
-                    <a href="{% url 'index' %}" class="btn text-secondary btn-sm">DASHBOARD</a> 
+                
+                <!-- Action Buttons: Right Side on Desktop -->
+                <div class="d-flex gap-2 align-items-center justify-content-start justify-content-md-end">
+                    <a href="{% url 'index' %}" class="btn btn-sm text-secondary border border-secondary px-3 d-inline-flex align-items-center">DASHBOARD</a> 
                     
-                    <button type="button" class="btn btn-sm text-success d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#accountModal">
+                    <button type="button" class="btn btn-sm text-success border border-success px-3 d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#accountModal">
                         <i class="bi bi-person-gear me-1"></i>
                         {% if user.is_authenticated %}
                             {{ user.username }}
@@ -223,11 +220,11 @@
                     <div class="modal-content shadow">
                         <div class="modal-header py-2">
                             <h6 class="modal-title fw-bold" id="accountModalLabel">ACCOUNT</h6>
-                            <button type="button" class="btn-close" data-bs-shadow="none" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body text-center d-grid gap-2 p-3">
                         {% if user.is_authenticated %}
-                            <button type="button" class="btn btn-success btn-sm mb-2">{{ user.username }} - Active</button>
+                            <button type="button" class="btn btn-success btn-sm mb-2" disabled>{{ user.username }} - Active</button>
                             
                             <div class="text-start border rounded p-3 mb-3 bg-light small text-muted">
                                 <div class="d-flex justify-content-between mb-1">
@@ -251,49 +248,50 @@
                             <a href="{% url 'register' %}" class="btn btn-outline-secondary btn-sm">SIGNUP</a>
                             <a href="{% url 'login' %}" class="btn btn-primary btn-sm">LOGIN</a>
                         {% endif %}
-                    </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {% block content %}
-            {% if election %}
-            <div class="dropdown">
-                <button class="nav-link border-0 bg-transparent d-flex align-items-center dropdown-toggle w-100" 
-                        type="button" 
-                        data-bs-toggle="dropdown" 
-                        style="font-size: 24px; text-align: left; color: rgba(0, 0, 0, 0.7); font-weight: 500;">
+            <div class="mb-3">
+                {% if election %}
+                <div class="dropdown">
+                    <button class="nav-link border-0 bg-transparent d-flex align-items-center dropdown-toggle w-100" 
+                            type="button" 
+                            data-bs-toggle="dropdown" 
+                            style="font-size: 24px; text-align: left; color: rgba(0, 0, 0, 0.7); font-weight: 500;">
+                        <i class="bi bi-check2-circle me-2"></i> 
+                        <span style="vertical-align: middle">{{ election.title }}</span>
+                    </button>
+                    <ul class="dropdown-menu shadow-sm" style="font-size: 12px; min-width: 180px;">
+                        {% for e in all_elections %}
+                        <li>
+                            <a class="dropdown-item py-1" href="{% url 'index' e.id %}">
+                                {{ e.title }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% else %}
+                <div class="d-flex align-items-center" style="font-size: 24px; color: rgba(0, 0, 0, 0.7); font-weight: 500;">
                     <i class="bi bi-check2-circle me-2"></i> 
-                    <span style="vertical-align: middle">{{ election.title }}</span>
-                </button>
-                <ul class="dropdown-menu shadow-sm" style="font-size: 12px; min-width: 180px;">
-                    {% for e in all_elections %}
-                    <li>
-                        <a class="dropdown-item py-1" href="{% url 'index' e.id %}">
-                            {{ e.title }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-                
+                    <span style="vertical-align: middle">ELECTION LIST EMPTY</span>
+                </div>
+                {% endif %}
             </div>
-            {% else %}
-            <div class="d-flex align-items-center" style="font-size: 24px; color: rgba(0, 0, 0, 0.7); font-weight: 500; padding-left: 0;">
-                <i class="bi bi-check2-circle me-2"></i> 
-                <span style="vertical-align: middle">ELECTION LIST EMPTY</span>
-            </div>
-            {% endif %}<br>
 
             {% if user.is_authenticated %}
-            <div class="row mb-4">
+            <div class="row mb-2">
                 <div class="col-xl-3 col-md-6 mb-4">
                     <div class="card card-stat bg-primary text-white shadow p-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <div class="text-dark-50 small">Total Voters</div>
-                                <div class="h3 fw-bold">{{vote_count}}</div>
+                                <div class="text-white-50 small">Total Voters</div>
+                                <div class="h3 fw-bold m-0">{{vote_count}}</div>
                             </div>
-                            <i class="bi bi-people-fill fs-1"></i>
+                            <i class="bi bi-people-fill fs-1 opacity-75"></i>
                         </div>
                     </div>
                 </div>
@@ -301,10 +299,10 @@
                     <div class="card card-stat bg-success text-white shadow p-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <div class="text-dark-50 small">Votes Cast</div>
-                                <div class="h3 fw-bold">{{ vote_count}}</div>
+                                <div class="text-white-50 small">Votes Cast</div>
+                                <div class="h3 fw-bold m-0">{{ vote_count}}</div>
                             </div>
-                            <i class="bi bi-box-seam-fill fs-1"></i>
+                            <i class="bi bi-box-seam-fill fs-1 opacity-75"></i>
                         </div>
                     </div>
                 </div>
@@ -312,10 +310,10 @@
                     <div class="card card-stat bg-warning text-white shadow p-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <div class="text-dark-50 small">Parties</div>
-                                <div class="h3 fw-bold">{{ party_count }}</div>
+                                <div class="text-white-50 small">Parties</div>
+                                <div class="h3 fw-bold m-0">{{ party_count }}</div>
                             </div> 
-                            <i class="bi bi-flag-fill fs-1"></i>
+                            <i class="bi bi-flag-fill fs-1 opacity-75"></i>
                         </div>
                     </div>
                 </div>
@@ -323,10 +321,10 @@
                     <div class="card card-stat bg-danger text-white shadow p-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <div class="text-dark-50 small">Candidates</div>
-                                <div class="h3 fw-bold">{{ candidate_count }}</div>
+                                <div class="text-white-50 small">Candidates</div>
+                                <div class="h3 fw-bold m-0">{{ candidate_count }}</div>
                             </div>
-                            <i class="bi bi-person-badge-fill fs-1"></i>
+                            <i class="bi bi-person-badge-fill fs-1 opacity-75"></i>
                         </div>
                     </div>
                 </div>
@@ -376,7 +374,7 @@
                             <td colspan="5" class="text-center text-muted">No candidates found for this election.</td>
                         </tr>
                         {% endfor %}
-                    </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
