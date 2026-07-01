@@ -34,14 +34,18 @@
 
                         <div class="mt-4 pt-3 border-top d-flex align-items-center justify-content-between">
                             <a href="{% url 'candidateslist' %}" class="btn btn-light px-4 text-muted">
-                                <i class="bi bi-arrow-left me-1"></i> Back
+                                <i class="bi bi-arrow-left me-1"></i> Candidate List
                             </a>
-                            
+                             
                             <div class="btn-group">
                                 <button type="submit" class="btn btn-success px-5 fw-semibold shadow-sm">
-                                    SAVE
+                                    SUBMIT
                                 </button>
                             </div>
+                            <a href="{% url 'electionadd' %}" class="btn btn-light px-4 text-muted">
+                                <i class="bi bi-arrow-right me-1"></i> Add Election
+                            </a>
+                            
                         </div>
                     </form>
                 </div>
@@ -50,7 +54,13 @@
             <div class="alert alert-success mt-4 border-0 shadow-sm" role="alert" style="background-color: #f0fff4;">
                 <small>
                     <i class="bi bi-info-circle-fill me-2 text-success"></i>
-                    <strong>Important:</strong> Double-check the candidate's party affiliation before saving to ensure accurate ballot data.
+                    <strong>Important:</strong> 
+                    <a href="{% url 'partyadd' %}" style="color: #6610f2; text-decoration: none;">Add Party </a>   If not added
+                </small>
+                <br>
+                <small>
+                    <i class="bi bi-info-circle-fill me-2 text-success"></i>
+                     Double-check the candidate's party affiliation before saving to ensure accurate ballot data.
                 </small>
             </div>
         </div>

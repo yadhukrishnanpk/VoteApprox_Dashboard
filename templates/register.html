@@ -32,10 +32,12 @@
                         </div>
 
                         <div class="mt-4 pt-3 border-top d-flex align-items-center justify-content-between">
-                            <a href="{% url 'index' %}" class="btn btn-light px-4 text-muted">
-                                <i class="bi bi-arrow-left me-1"></i> Back
-                            </a>
-                            
+                            <div class="text-muted small">
+                                    Already have an account? 
+                                    <a href="{% url 'login' %}" class="text-primary fw-bold" style="text-decoration: none;">
+                                        Log in
+                                    </a>
+                                </div>
                             <div class="btn-group">
                                 <button type="submit" class="btn btn-success px-5 fw-semibold shadow-sm text-white">
                                     SUBMIT

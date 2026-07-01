@@ -39,154 +39,205 @@
 
 <div class="container-fluid">
     <div class="row">
+        <!-- Sidebar Navigation -->
         <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
-    <h4 class="text-left mb-4">
-    <i class="fas fa-vote-yea me-2 text-primary"></i>VoteApprox
-</h4>
-    <ul class="nav flex-column">
+            <h4 class="text-left mb-4">
+                <i class="fas fa-vote-yea me-2 text-primary"></i>VoteApprox
+            </h4>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" href="{% url 'index' %}">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                </li>
 
-    <li class="nav-item mb-2">
-    <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" href="{% url 'index' %}">
-        <i class="bi bi-speedometer2 me-2"></i> Dashboard
-    </a>
-</li>
+                {% if user.is_authenticated %}
+                <li class="nav-item mb-2">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'voterslist' %}active{% endif %}" href="{% url 'voterslist' %}">
+                        <i class="bi bi-person-check me-2"></i> Voters
+                    </a>
+                    <ul class="nav flex-column ms-3 mt-1">
+                        <li class="nav-item">
+                            <a class="nav-link small {% if request.resolver_match.url_name == 'votersadd' %}active{% endif %}" href="{% url 'votersadd' %}">
+                                <i class="bi bi-plus-circle me-2"></i> Add
+                            </a>
+                        </li>
+                        {% if election %}
+                        <li class="nav-item">
+                            <a class="nav-link small {% if request.resolver_match.url_name == 'voted' %}active{% endif %}" 
+                               href="{% url 'voted' election_id=election.id %}">
+                                <i class="bi bi-person-check-fill me-2"></i> Voted Status List
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                {% endif %}
 
-{% if user.is_authenticated %}
-<li class="nav-item mb-2">
-    <a class="nav-link {% if request.resolver_match.url_name == 'electionlist' %}active{% endif %}" href="{% url 'electionlist' %}">
-        <i class="bi bi-archive me-2"></i> Elections
-    </a>
-{% endif %}
+                <li class="nav-item mb-2">
+                    {% if user.is_authenticated %}
+                    <a class="nav-link {% if request.resolver_match.url_name == 'partyslist' %}active{% endif %}" href="{% url 'partyslist' %}">
+                        <i class="bi bi-flag me-2"></i> Political Party
+                    </a>
+                    {% endif %}
+                    <ul class="nav flex-column ms-3 mt-1">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link small {% if request.resolver_match.url_name == 'partyadd' %}active{% endif %}" href="{% url 'partyadd' %}">
+                                <i class="bi bi-plus-circle me-2"></i> Add
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </li>
+               
+                <li class="nav-item mb-2">
+                    {% if user.is_authenticated %}
+                    <a class="nav-link {% if request.resolver_match.url_name == 'candidateslist' %}active{% endif %}" href="{% url 'candidateslist' %}">
+                        <i class="bi bi-people me-2"></i> Candidates
+                    </a>
+                    {% endif %}
+                    <ul class="nav flex-column ms-3 mt-1">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link small {% if request.resolver_match.url_name == 'candidateadd' %}active{% endif %}" href="{% url 'candidateadd' %}">
+                                <i class="bi bi-plus-circle me-2"></i> Add
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </li>
 
-    {% if user.is_authenticated %}
-    <ul class="nav flex-column ms-3 mt-1">
-        <li class="nav-item">
-            <a class="nav-link small {% if request.resolver_match.url_name == 'electionadd' %}active{% endif %}" href="{% url 'electionadd' %}">
-                <i class="bi bi-plus-circle me-2"></i> Add
-            </a>
-        </li>
-    </ul>
-    {% endif %}
-</li>
-{% if user.is_authenticated %}
-<li class="nav-item mb-2">
-    <a class="nav-link {% if request.resolver_match.url_name == 'voterslist' %}active{% endif %}" href="{% url 'voterslist' %}">
-        <i class="bi bi-person-check me-2"></i> Voters
-    </a>
-{% endif %}
+                {% if user.is_authenticated %}
+                <li class="nav-item mb-2">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'electionlist' %}active{% endif %}" href="{% url 'electionlist' %}">
+                        <i class="bi bi-archive me-2"></i> Elections
+                    </a>
+                    <ul class="nav flex-column ms-3 mt-1">
+                        <li class="nav-item">
+                            <a class="nav-link small {% if request.resolver_match.url_name == 'electionadd' %}active{% endif %}" href="{% url 'electionadd' %}">
+                                <i class="bi bi-plus-circle me-2"></i> Add
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+                
+                {% if user.is_authenticated %}
+                <li class="nav-item" style="list-style: none; display: flex; justify-content: center; margin: 15px 0;">
+                    <a class="nav-link small {% if request.resolver_match.url_name == 'castlist' %}active{% endif %}" 
+                       href="{% url 'castlist' %}"
+                       style="display: inline-flex; align-items: center; padding: 10px 20px; background-color: #166908; color: white; border-radius: 50px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <i class="bi bi-envelope-paper me-2" style="color: white;"></i> VOTE CASTING 
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
 
-    <ul class="nav flex-column ms-3 mt-1">
-        {% if user.is_authenticated %}
-        <li class="nav-item">
-            <a class="nav-link small {% if request.resolver_match.url_name == 'votersadd' %}active{% endif %}" href="{% url 'votersadd' %}">
-                <i class="bi bi-plus-circle me-2"></i> Add
-            </a>
-        </li>
-        {% endif %}
-        {% if user.is_authenticated and election %}
-        <li class="nav-item">
-            <a class="nav-link small {% if request.resolver_match.url_name == 'voted' %}active{% endif %}" 
-               href="{% url 'voted' election_id=election.id %}">
-                <i class="bi bi-person-check-fill me-2"></i> Voted Status List
-            </a>
-        </li>
-        {% endif %}
-    </ul>
-</li>
-   
-    <li class="nav-item mb-2">
-        {% if user.is_authenticated %}
-        <a class="nav-link {% if request.resolver_match.url_name == 'candidateslist' %}active{% endif %}" href="{% url 'candidateslist' %}">
-            <i class="bi bi-people me-2"></i> Candidates
-        </a>
-        {% endif %}
-        <ul class="nav flex-column ms-3 mt-1">
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link small {% if request.resolver_match.url_name == 'candidateadd' %}active{% endif %}" href="{% url 'candidateadd' %}">
-                    <i class="bi bi-plus-circle me-2"></i> Add
-                </a>
-            </li>
-            {% endif %}
-        </ul>
-    </li>
-
-    <li class="nav-item mb-2">
-        {% if user.is_authenticated %}
-        <a class="nav-link {% if request.resolver_match.url_name == 'partyslist' %}active{% endif %}" href="{% url 'partyslist' %}">
-            <i class="bi bi-flag me-2"></i> Political Party
-        </a>
-        {% endif %}
-        <ul class="nav flex-column ms-3 mt-1">
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link small {% if request.resolver_match.url_name == 'partyadd' %}active{% endif %}" href="{% url 'partyadd' %}">
-                    <i class="bi bi-plus-circle me-2"></i> Add
-                </a>
-            </li>
-            {% endif %}
-        </ul>
-    </li>
-    {% if user.is_authenticated %}
-   <li class="nav-item" style="list-style: none; display: flex; justify-content: center; margin: 15px 0;">
-    <a class="nav-link small {% if request.resolver_match.url_name == 'castlist' %}active{% endif %}" 
-       href="{% url 'castlist' %}"
-       style="display: inline-flex; align-items: center; padding: 10px 20px; background-color: #166908; color: white; border-radius: 50px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <i class="bi bi-envelope-paper me-2" style="color: white;"></i> VOTE CASTING 
-    </a>
-</li>
-{% endif %}
-</ul>
-</nav>
-
+        <!-- Main Content Area -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <div class="d-flex align-items-center">
-                           
+                    {% if user.is_authenticated %}
+                        {% if election.id %}
+                        <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start my-3">
+                            
+                            <a href="{% url 'partyslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
+                                <i class="bi bi-flag me-1"></i> POLITICAL PARTY LIST
+                            </a>
+                            
+                            <a href="{% url 'candidateslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
+                                <i class="bi bi-people me-1"></i> CANDIDATE LIST
+                            </a>
+                            
+                            <a href="{% url 'voterslist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
+                                <i class="bi bi-card-list me-1"></i> VOTER LIST
+                            </a>
+                            
+                            {% if election.id %}
+                                <a href="{% url 'voted' election.id %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
+                                    <i class="bi bi-check2-square me-1"></i> VOTING STATUS
+                                </a>
+                                <a href="{% url 'electionlist' %}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center">
+                                <i class="bi bi-box-seam me-1"></i> ELECTION LIST
+                            </a>
+                            {% else %}
+                                <button class="btn btn-outline-secondary btn-sm px-3 shadow-sm d-inline-flex align-items-center" disabled>
+                                    <i class="bi bi-arrow-right me-1"></i> Back
+                                </button>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                            <a href="{% url 'index' %}" class="btn text-secondary btn-sm " aria-disabled="true"><i class="bi bi-arrow-left me-1"></i> Back</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn text-secondary btn-sm">LOGIN FOR VOTING STATUS</a>
+                    {% endif %}
                 </div>
-                <div class="btn-toolbar mb-2 mb-md-0">
-    {% if user.is_authenticated %}
-        
-        {% if user.is_authenticated %}
-            <a href="{% url 'index' %}" style="text-decoration:none;">
-                <button type="button" class="btn btn-sm btn-outline-secondary">DASHBOARD</button>
-            </a>&nbsp;
-            
-        {% endif %}
-        
-        <a href="{% url 'logout' %}" style="text-decoration:none;">
-            <button type="button" class="btn btn-sm btn-outline-secondary">LOGOUT</button>
-        </a>&nbsp;
-        <a href="" style="text-decoration:none;">
-                <button type="button" class="btn btn-sm btn-success">{{ user }}-Active</button>
-            </a>&nbsp;
-
-    {% else %}
-        <a href="{% url 'register' %}" style="text-decoration:none;">
-            <button type="button" class="btn btn-sm btn-outline-secondary">SIGNUP</button>
-        </a>&nbsp;
-        
-        <a href="{% url 'login' %}" style="text-decoration:none;">
-            <button type="button" class="btn btn-sm btn-outline-secondary">LOGIN</button>
-        </a>
-    {% endif %}
-</div>
+                <!-- Action Button that triggers the Popup Modal -->
+                <div class="btn-toolbar d-flex gap-2 mb-2 mb-md-0">
+                    <a href="{% url 'index' %}" class="btn text-secondary btn-sm">DASHBOARD</a> 
+                    
+                    <button type="button" class="btn btn-sm text-success d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#accountModal">
+                        <i class="bi bi-person-gear me-1"></i>
+                        {% if user.is_authenticated %}
+                            {{ user.username }}
+                        {% else %}
+                            Guest
+                        {% endif %}
+                    </button>
+                </div>
             </div>
-                {% block content %}
-                <div class="dropdown">
+
+            <!-- POPUP MODAL COMPONENT -->
+            <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-sm">
+                    <div class="modal-content shadow">
+                        <div class="modal-header py-2">
+                            <h6 class="modal-title fw-bold" id="accountModalLabel">ACCOUNT</h6>
+                            <button type="button" class="btn-close" data-bs-shadow="none" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center d-grid gap-2 p-3">
+                        {% if user.is_authenticated %}
+                            <button type="button" class="btn btn-success btn-sm mb-2">{{ user.username }} - Active</button>
+                            
+                            <div class="text-start border rounded p-3 mb-3 bg-light small text-muted">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span><strong>Joined:</strong></span>
+                                    <span>{{ user.date_joined|date:"d M Y" }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span><strong>Last Login:</strong></span>
+                                    <span>{{ user.last_login|date:"d M Y, h:i A" }}</span>
+                                </div>
+                                {% if request.session.login_count %}
+                                <div class="d-flex justify-content-between">
+                                    <span><strong>Session Logins:</strong></span>
+                                    <span>{{ request.session.login_count }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">LOGOUT</a>
+                        {% else %}
+                            <a href="{% url 'register' %}" class="btn btn-outline-secondary btn-sm">SIGNUP</a>
+                            <a href="{% url 'login' %}" class="btn btn-primary btn-sm">LOGIN</a>
+                        {% endif %}
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            {% block content %}
+            {% if election %}
+            <div class="dropdown">
                 <button class="nav-link border-0 bg-transparent d-flex align-items-center dropdown-toggle w-100" 
                         type="button" 
                         data-bs-toggle="dropdown" 
-                        style="
-                            font-size: 24px; 
-                            text-align: left; 
-                            color: rgba(0, 0, 0, 0.7);
-                            font-weight: 500;
-                        ">
+                        style="font-size: 24px; text-align: left; color: rgba(0, 0, 0, 0.7); font-weight: 500;">
                     <i class="bi bi-check2-circle me-2"></i> 
-                    <span style="vertical-align: middle">
-                        {% if election %}{{ election.title }}-DASHBOARD {% else %}SELECT ELECTION{% endif %}
-                    </span>
+                    <span style="vertical-align: middle">{{ election.title }}</span>
                 </button>
                 <ul class="dropdown-menu shadow-sm" style="font-size: 12px; min-width: 180px;">
                     {% for e in all_elections %}
@@ -197,8 +248,15 @@
                     </li>
                     {% endfor %}
                 </ul>
-        
-            </div><br>
+                
+            </div>
+            {% else %}
+            <div class="d-flex align-items-center" style="font-size: 24px; color: rgba(0, 0, 0, 0.7); font-weight: 500; padding-left: 0;">
+                <i class="bi bi-check2-circle me-2"></i> 
+                <span style="vertical-align: middle">ELECTION LIST EMPTY</span>
+            </div>
+            {% endif %}<br>
+
             {% if user.is_authenticated %}
             <div class="row mb-4">
                 <div class="col-xl-3 col-md-6 mb-4">
@@ -247,12 +305,11 @@
                 </div>
             </div>
             {% endif %}
+
             <div class="card shadow border-0 p-4">
                 <h5 class="mb-4">Dashboard</h5>
                 <div class="table-responsive">
-                    
                     <table class="table table-hover align-middle">
-                        
                         <thead class="table-light">
                             <tr>
                                 <th>No</th>
@@ -262,7 +319,6 @@
                                 <th>Percentage</th>
                             </tr>
                         </thead>
-                        
                         <tbody>
                         {% for data in data_list %}
                         <tr>
@@ -273,37 +329,31 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="progress flex-grow-1" style="height: 12px; background-color: #e9ecef; margin-right: 10px;">
-                                        <div class="progress-bar bg-success" 
-                                            role="progressbar" 
-                                            style="width: {{ data.vote_percentage }}%; min-width: 2px;" 
-                                            aria-valuenow="{{ data.vote_percentage }}"
-                                            aria-valuemin="0" 
-                                            aria-valuemax="100">
-                                        </div>
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ data.vote_percentage }}%; min-width: 2px;" aria-valuenow="{{ data.vote_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                     <small class="fw-bold 
-                                    {% if data.vote_percentage < 30 %}
-                                        text-danger
-                                    {% elif data.vote_percentage >= 30 and data.vote_percentage < 70 %}
-                                        text-warning
-                                    {% else %}
-                                        text-success
-                                    {% endif %}">
-                                    {{ data.vote_percentage }}%
-                                </small>
+                                        {% if data.vote_percentage < 30 %}
+                                            text-danger
+                                        {% elif data.vote_percentage >= 30 and data.vote_percentage < 70 %}
+                                            text-warning
+                                        {% else %}
+                                            text-success
+                                        {% endif %}">
+                                        {{ data.vote_percentage }}%
+                                    </small>
                                 </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4" class="text-center text-muted">No candidates found for this election.</td>
+                            <td colspan="5" class="text-center text-muted">No candidates found for this election.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                     </table>
                 </div>
-                {% endblock %}
             </div>
+            {% endblock %}
         </main>
     </div>
 </div>
@@ -311,6 +361,3 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-
-                    
