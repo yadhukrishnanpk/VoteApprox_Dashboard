@@ -83,7 +83,6 @@
             </a>
         </li>
         {% endif %}
-
         {% if user.is_authenticated and election %}
         <li class="nav-item">
             <a class="nav-link small {% if request.resolver_match.url_name == 'voted' %}active{% endif %}" 
