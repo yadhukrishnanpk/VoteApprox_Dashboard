@@ -27,12 +27,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Voting',
-    'crispy_forms',
-    "crispy_bootstrap4",
+    
     'cloudinary_storage',
     'django.contrib.staticfiles',
     'cloudinary',
+    
+    'Voting',
+    'crispy_forms',
+    "crispy_bootstrap4",
+    
 ]
 
 MIDDLEWARE = [
