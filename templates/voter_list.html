@@ -42,7 +42,7 @@
                     </td>
                     <td style="text-align:center;">{{ data.voter_id }}</td>
                 <td><strong>{{ data.name }}</strong></td>
-                {% if user.is_staff %}
+                {% if user.is_authenticated %}
                 <td>{{ data.dob|date:"M d, Y" }}</td>
                 <td>
                     <span class="badge {% if data.voted_for_candidate == 'Not Voted' %}bg-white text-dark{% else %}bg-white text-dark{% endif %}">
