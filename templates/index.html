@@ -76,7 +76,7 @@
 {% endif %}
 
     <ul class="nav flex-column ms-3 mt-1">
-        {% if user.is_staff %}
+        {% if user.is_authenticated %}
         <li class="nav-item">
             <a class="nav-link small {% if request.resolver_match.url_name == 'votersadd' %}active{% endif %}" href="{% url 'votersadd' %}">
                 <i class="bi bi-plus-circle me-2"></i> Add
