@@ -14,4 +14,4 @@ COPY . .
 
 RUN python manage.py collectstatic --noinput
 
-CMD sh -c "python manage.py migrate && gunicorn Election.wsgi:application --bind 0.0.0.0:8000"
+CMD sh -c "python manage.py migrate && python createsuperuser.py && gunicorn Election.wsgi:application --bind 0.0.0.0:8000"
