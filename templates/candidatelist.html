@@ -1,4 +1,5 @@
-{% extends 'index.html'%} {% block content %}
+{% extends 'index.html'%} 
+{% block content %}
 
 <a href="{% url 'candidateadd' %}" class="btn btn-outline-secondary px-2 d-inline-flex align-items-center">
     <i class="bi bi-plus-circle me-1"></i>Add Candidate
@@ -53,28 +54,39 @@
           <td>{{ data.name }}</td>
           <td>{{ data.party }}</td>
           <td style="text-align:center;">{{ data.bio }}</td>
-          <td> <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
-    {% if user.is_authenticated %}
-    <li class="nav-item" style="list-style-type: none;">
-        <a class="nav-link small" 
-           href="{% url 'candidateedit' data.id %}" 
-           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #283cd3;">
-            <i class="bi bi-pencil-square me-2" style="color: inherit;"></i> Edit
-        </a>
-    </li>
-    <li class="nav-item" style="list-style-type: none;">
-        <a class="nav-link small" 
-           href="{% url 'candidatedelete' data.id %}" 
-           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #dc3545;">
-            <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
-        </a>
-    </li>
-{% endif %}
-</ul></td>
+          <td> 
+            <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
+              {% if user.is_authenticated %}
+              <li class="nav-item" style="list-style-type: none;">
+                  <a class="nav-link small" 
+                     href="{% url 'candidateedit' data.id %}" 
+                     style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #283cd3;">
+                      <i class="bi bi-pencil-square me-2" style="color: inherit;"></i> Edit
+                  </a>
+              </li>
+              <li class="nav-item" style="list-style-type: none;">
+                  <a class="nav-link small" 
+                     href="{% url 'candidatedelete' data.id %}" 
+                     style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #dc3545;">
+                      <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
+                  </a>
+              </li>
+              {% endif %}
+            </ul>
+          </td>
+        </tr>
+        {% empty %}
+        <!-- This displays automatically if addcandidate has no records -->
+        <tr>
+          <td colspan="{% if user.is_authenticated %}6{% else %}5{% endif %}" class="text-center py-5 text-muted">
+            <i class="bi bi-folder-x d-block mb-2 text-secondary" style="font-size: 2rem;"></i>
+            No candidate data available.
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    {% endblock %}
   </div>
 </div>
+
+{% endblock %}

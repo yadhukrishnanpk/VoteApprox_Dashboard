@@ -4,103 +4,101 @@
 <a href="{% url 'votersadd' %}" class="btn btn-outline-secondary px-2 d-inline-flex align-items-center">
     <i class="bi bi-plus-circle me-1"></i>Add Voters
 </a><br><br>
-  <div class="card shadow border-0 p-4">
-                <h5 class="mb-4">Voters List</h5>
-                <div class="table-responsive">
-                    
-                    <table class="table table-hover align-middle">
-                        
-                        <thead class="table-light">
-                        <tr>
-                            <th>No</th>
-                            <th>Photo</th>
-                            <th style="text-align:center;">Voter ID</th>
-                            <th>Voter Name</th>
-                            {% if user.is_authenticated %}
-                            <th>DOB</th>
-                            <th>Voted For</th>   
-                            <th>Party</th>       
-                            <th>Eligibility</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                            {% endif %}
-                            
-                        </tr>
-                    </thead>
-                <tbody>
+
+<div class="card shadow border-0 p-4">
+    <h5 class="mb-4">Voters List</h5>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>No</th>
+                    <th>Photo</th>
+                    <th style="text-align:center;">Voter ID</th>
+                    <th>Voter Name</th>
+                    {% if user.is_authenticated %}
+                    <th>DOB</th>
+                    <th>Voted For</th>   
+                    <th>Party</th>       
+                    <th>Eligibility</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
                 {% for data in voters %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>
                         {% if data.voter_photo %}
                             <img src="{{ data.voter_photo.url }}" 
-                                alt="{{ data.name }}" 
-                                style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #dee2e6; border-radius: 10%;">
+                                 alt="{{ data.name }}" 
+                                 style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #dee2e6; border-radius: 10%;">
                         {% else %}
                             <div class="rounded bg-light d-flex align-items-center justify-content-center border" 
-                                style="width: 50px; height: 50px;">
+                                 style="width: 50px; height: 50px;">
                                 <i class="bi bi-person text-secondary" style="font-size: 1.5rem;"></i>
                             </div>
                         {% endif %}
                     </td>
                     <td style="text-align:center;">{{ data.voter_id }}</td>
-                <td><strong>{{ data.name }}</strong></td>
-                {% if user.is_authenticated %}
-                <td>{{ data.dob|date:"M d, Y" }}</td>
-                <td>
-                    <span class="badge {% if data.voted_for_candidate == 'Not Voted' %}bg-white text-dark{% else %}bg-white text-dark{% endif %}">
-                        {{ data.voted_for_candidate }}
-                    </span>
-                </td>
-                <td>
-                    <span class="badge bg-white text-dark">{{ data.voted_for_party }}</span>
-                </td>
-
-                <td>
-     {% if data.eligibility == "NOT ELIGIBLE" %}
-        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">INELIGIBLE</span>
-    {% else %}
-        <span class="badge bg-success-subtle text-black border border-success-subtle">ELIGIBLE</span>
-    {% endif %}
-</td>
-        <td>
-            {% if data.vote_status == "NOT VOTED" %}
-        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">NOT VOTED</span>
-    {% else %}
-        <span class="badge bg-success-subtle text-black border border-success-subtle">VOTED</span>
-    {% endif %}
-        </td>
-        <td>
-           <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
-    {% if user.is_authenticated %}
-    <li class="nav-item" style="list-style-type: none;">
-        <a class="nav-link small" 
-           href="{% url 'voteredit' data.id %}" 
-           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #283cd3;">
-            <i class="bi bi-pencil-square me-2" style="color: inherit;"></i> Edit
-        </a>
-    </li>
-    <li class="nav-item" style="list-style-type: none;">
-        <a class="nav-link small" 
-           href="{% url 'voterdelete' data.id %}" 
-           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #dc3545;">
-            <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
-        </a>
-    </li>
-{% endif %}
-</ul>
-        </td>
-    </tr>
-    {% endif %}
-    {% empty %}
-    <tr>
-        <td colspan="8" class="text-center py-5">
-            <i class="bi bi-search fs-2 text-muted"></i>
-            <p class="mt-2">No voters found for the selected election.</p>
-        </td>
-    </tr>
-    {% endfor %}
-</tbody>
-                    </table>
+                    <td><strong>{{ data.name }}</strong></td>
+                    
+                    {% if user.is_authenticated %}
+                    <td>{{ data.dob|date:"M d, Y" }}</td>
+                    <td>
+                        <span class="badge bg-white text-dark">
+                            {{ data.voted_for_candidate }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-white text-dark">{{ data.voted_for_party }}</span>
+                    </td>
+                    <td>
+                        {% if data.eligibility == "NOT ELIGIBLE" %}
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">INELIGIBLE</span>
+                        {% else %}
+                            <span class="badge bg-success-subtle text-black border border-success-subtle">ELIGIBLE</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if data.vote_status == "NOT VOTED" %}
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">NOT VOTED</span>
+                        {% else %}
+                            <span class="badge bg-success-subtle text-black border border-success-subtle">VOTED</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
+                            <li class="nav-item" style="list-style-type: none;">
+                                <a class="nav-link small" 
+                                   href="{% url 'voteredit' data.id %}" 
+                                   style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px; color: #283cd3;">
+                                    <i class="bi bi-pencil-square me-2" style="color: inherit;"></i> Edit
+                                </a>
+                            </li>
+                            <li class="nav-item" style="list-style-type: none;">
+                                <a class="nav-link small" 
+                                   href="{% url 'voterdelete' data.id %}" 
+                                   style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px; color: #dc3545;">
+                                    <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
+                                </a>
+                            </li>
+                        </ul>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <!-- Dynamically wraps total grid columns if system operator is logged in vs out -->
+                <tr>
+                    <td colspan="{% if user.is_authenticated %}10{% else %}4{% endif %}" class="text-center py-5 text-muted">
+                        <i class="bi bi-person-x d-block mb-2 text-secondary" style="font-size: 2rem;"></i>
+                        No voter list data available.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
-

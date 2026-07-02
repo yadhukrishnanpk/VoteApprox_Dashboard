@@ -1,8 +1,10 @@
-{% extends 'index.html'%} {% block content %}
+{% extends 'index.html'%} 
+{% block content %}
 
 <a href="{% url 'partyadd' %}" class="btn btn-outline-secondary px-2 d-inline-flex align-items-center">
     <i class="bi bi-plus-circle me-1"></i>Add Political Party
 </a><br><br>
+
 <div class="card shadow border-0 p-4">
   <h5 class="mb-4">Political Party List</h5>
   <div class="table-responsive">
@@ -37,13 +39,14 @@
               "
             />
             {% else %}
+            <!-- Flag icon fallback makes more sense here than a person silhouette icon -->
             <div
-              class="rounded-circle bg-light d-flex align-items-center justify-content-center border"
+              class="rounded bg-light d-flex align-items-center justify-content-center border"
               style="width: 50px; height: 50px;"
             >
               <i
-                class="bi bi-person-fill text-secondary"
-                style="font-size: 1.5rem"
+                class="bi bi-flag-fill text-secondary"
+                style="font-size: 1.3rem"
               ></i>
             </div>
             {% endif %}
@@ -51,29 +54,38 @@
           <td>{{ data.name }}</td>
           <td>{{ data.abbreviation}}</td>
           {% if user.is_authenticated %}
-          <td> <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
-    
-    <li class="nav-item" style="list-style-type: none;">
-        <a class="nav-link small" 
-           href="{% url 'partyedit' data.id %}" 
-           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #283cd3;">
-            <i class="bi bi-pencil-square me-2" style="color: inherit;"></i> Edit
-        </a>
-    </li>
-    <li class="nav-item" style="list-style-type: none;">
-        <a class="nav-link small" 
-           href="{% url 'partydelete' data.id %}" 
-           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #dc3545;">
-            <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
-        </a>
-    </li>
-
-</ul></td>
-{% endif %}
+          <td> 
+            <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
+                <li class="nav-item" style="list-style-type: none;">
+                    <a class="nav-link small" 
+                       href="{% url 'partyedit' data.id %}" 
+                       style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #283cd3;">
+                        <i class="bi bi-pencil-square me-2" style="color: inherit;"></i> Edit
+                    </a>
+                </li>
+                <li class="nav-item" style="list-style-type: none;">
+                    <a class="nav-link small" 
+                       href="{% url 'partydelete' data.id %}" 
+                       style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #dc3545;">
+                        <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
+                    </a>
+                </li>
+            </ul>
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <!-- Safely loops out to this fallback if there are zero parties recorded -->
+        <tr>
+          <td colspan="{% if user.is_authenticated %}5{% else %}4{% endif %}" class="text-center py-5 text-muted">
+            <i class="bi bi-flag text-secondary d-block mb-2" style="font-size: 2rem;"></i>
+            No political party data available.
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    {% endblock %}
   </div>
 </div>
+
+{% endblock %}

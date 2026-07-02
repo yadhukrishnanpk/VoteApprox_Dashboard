@@ -1,8 +1,11 @@
-{% extends "index.html" %} {% block content %}
+{% extends "index.html" %} 
+{% block content %}
 {% load tz %}
+
 <a href="{% url 'electionadd' %}" class="btn btn-outline-secondary px-2 d-inline-flex align-items-center">
     <i class="bi bi-plus-circle me-1"></i>Add Election
 </a><br><br>
+
 <div class="card shadow border-0 p-4">
     <h5 class="mb-4">All Elections</h5>
     <div class="table-responsive">
@@ -26,40 +29,48 @@
                     <td>{{ forloop.counter }}</td>
                     <td><strong>{{ e.title }}</strong></td>
                     <td>{{ e.start_date|date:"d M Y" }} <br> <small class="text-muted">{{ e.start_time|time:"h:i A" }}</small></td>
-                        <td>{{ e.end_date|date:"d M Y" }} <br> <small class="text-muted">{{ e.end_time|time:"h:i A" }}</small></td>
-                        <td>
-                            {% if e.full_end < current_time %}
-                                <span class="badge bg-secondary">COMPLETED</span>
-                            {% elif e.full_start > current_time %}
-                                <span class="badge bg-warning text-dark">UPCOMING</span>
-                            {% else %}
-                                <span class="badge bg-success">ACTIVE</span>
-                            {% endif %}
-                        </td>
-                        <td>
+                    <td>{{ e.end_date|date:"d M Y" }} <br> <small class="text-muted">{{ e.end_time|time:"h:i A" }}</small></td>
+                    <td>
+                        {% if e.full_end < current_time %}
+                            <span class="badge bg-secondary">COMPLETED</span>
+                        {% elif e.full_start > current_time %}
+                            <span class="badge bg-warning text-dark">UPCOMING</span>
+                        {% else %}
+                            <span class="badge bg-success">ACTIVE</span>
+                        {% endif %}
+                    </td>
+                    <td>
                         <a href="{% url 'index' e.id %}" class="btn btn-sm btn-primary">
                            Dashboard
                         </a>
                     </td>
-                    <td> <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
-    {% if user.is_authenticated %}
-    <li class="nav-item" style="list-style-type: none;">
-        <a class="nav-link small" 
-           href="{% url 'electionedit' e.id %}" 
-           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #283cd3;">
-            <i class="bi bi-pencil-square me-2" style="color: inherit;"></i> Edit
-        </a>
-    </li>
-    <li class="nav-item" style="list-style-type: none;">
-        <a class="nav-link small" 
-           href="{% url 'electiondelete' e.id %}" 
-           style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #dc3545;">
-            <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
-        </a>
-    </li>
-    {% endif %}
-
-</ul></td>
+                    {% if user.is_authenticated %}
+                    <td> 
+                        <ul class="nav flex-column" style="list-style-type: none; padding-left: 0;">
+                            <li class="nav-item" style="list-style-type: none;">
+                                <a class="nav-link small" 
+                                   href="{% url 'electionedit' e.id %}" 
+                                   style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #283cd3;">
+                                    <i class="bi bi-pencil-square me-2" style="color: inherit;"></i> Edit
+                                </a>
+                            </li>
+                            <li class="nav-item" style="list-style-type: none;">
+                                <a class="nav-link small" 
+                                   href="{% url 'electiondelete' e.id %}" 
+                                   style="text-decoration: none; display: flex; align-items: center; padding: 5px 10px;color: #dc3545;">
+                                    <i class="bi bi-trash me-2" style="color: inherit;"></i> Delete
+                                </a>
+                            </li>
+                        </ul>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="{% if user.is_authenticated %}7{% else %}6{% endif %}" class="text-center py-5 text-muted">
+                        <i class="bi bi-calendar-x d-block mb-2 text-secondary" style="font-size: 2rem;"></i>
+                        No Election data available.
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
