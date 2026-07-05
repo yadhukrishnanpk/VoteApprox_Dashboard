@@ -34,11 +34,15 @@
                         <div class="mt-4 pt-3 border-top d-flex align-items-center justify-content-between">
                         
                             <div class="text-muted small">
-                                    Don't have an account? 
-                                    <a href="{% url 'register' %}" class="text-primary fw-bold" style="text-decoration: none;">
-                                        Sign up
-                                    </a>
-                                </div>
+                                Don't have an account?
+                                <a href="{% url 'register' %}" class="text-primary fw-bold" style="text-decoration: none;">
+                                    Sign up
+                                </a>
+                                &nbsp;|&nbsp;
+                                <a href="{% url 'forgot_password' %}" class="text-primary fw-bold" style="text-decoration: none;">
+                                    Forgot password ?
+                                </a>
+                            </div>
                             
                             <div class="btn-group">
                                 <button type="submit" class="btn btn-success px-5 fw-semibold shadow-sm text-white">

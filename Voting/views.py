@@ -12,6 +12,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import SetPasswordForm
+from django.contrib import messages
+from .forms import EmailVerifyForm
 
 # Helper to filter election data by user
 def get_election_data(request, election_id):
@@ -382,3 +385,38 @@ def login(request):
 def logout(request):
     auth.logout(request)
     return redirect('index')
+
+
+def forgot_password(request):
+    if request.method == 'POST':
+        form = EmailVerifyForm(request.POST)
+        if form.is_valid():
+            user = User.objects.get(
+                username=form.cleaned_data['username'],
+                email__iexact=form.cleaned_data['email']
+            )
+            request.session['reset_user_id'] = user.id
+            return redirect('reset_password')
+    else:
+        form = EmailVerifyForm()
+    return render(request, 'forgot_password.html', {'form': form})
+
+def reset_password(request):
+    user_id = request.session.get('reset_user_id')
+    if not user_id:
+        messages.error(request, 'Please verify your email first.')
+        return redirect('forgot_password')
+
+    user = User.objects.get(id=user_id)
+
+    if request.method == 'POST':
+        form = SetPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            del request.session['reset_user_id']  # clean up
+            messages.success(request, 'Password reset successful. Please log in.')
+            return redirect('login')
+    else:
+        form = SetPasswordForm(user)
+
+    return render(request, 'reset_password.html', {'form': form})

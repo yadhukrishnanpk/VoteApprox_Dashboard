@@ -2,6 +2,7 @@ from django import forms
 from .models import Vote, Election, Candidate, Voter, Party
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import SetPasswordForm
 
 class VotingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -83,4 +84,22 @@ class PartyForm(forms.ModelForm):
 class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('email', 'username') # Removed password fields as UserCreationForm handles them
+        fields = ('email', 'username')
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("An account with this email already exists.")
+        return email
+        
+class EmailVerifyForm(forms.Form):
+    username = forms.CharField(label="Username")
+    email = forms.EmailField(label="Email")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        email = cleaned_data.get('email')
+        if username and email:
+            if not User.objects.filter(username=username, email__iexact=email).exists():
+                raise forms.ValidationError("No account found with that username and email combination.")
+        return cleaned_data
