@@ -5,10 +5,7 @@ load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.environ.get('SECRET_KEY')
-if not SECRET_KEY:
-    raise ValueError("The SECRET_KEY environment variable is missing!")
-
+SECRET_KEY = os.getenv("SECRET_KEY", "temporary-build-secret-key")
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = ['voteapprox-dashboard.onrender.com', '.onrender.com', 'localhost', '127.0.0.1']
